@@ -53,7 +53,7 @@ zabbix_export:
             - name: cmd
               value: '<show><counter><interface>ae2.3007</interface></counter></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: a667e59dc6ef46e99adf72e6c71bb99d
           name: 'API-ae2.3007 obytes mbps'
           type: DEPENDENT
@@ -99,7 +99,7 @@ zabbix_export:
             - name: cmd
               value: '<show><system><disk-space></disk-space></system></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 9a4ae96f8e194d62a49a8943f2a65afb
           name: 'API-Disk Space Free'
           type: DEPENDENT
@@ -276,7 +276,7 @@ zabbix_export:
             - name: cmd
               value: '<show><high-availability><state></state></high-availability></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 2ba4b43097e04d8290dad05bfd693e75
           name: API-processors-s1dp0
           type: HTTP_AGENT
@@ -299,7 +299,7 @@ zabbix_export:
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 2dcf457356b34198a2e8edf9bfbd47ef
           name: API-ConnectionsPerSecond
           type: DEPENDENT
@@ -333,7 +333,7 @@ zabbix_export:
             - name: cmd
               value: '<show><session><info></info></session></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: ecd8157995324450b7ad84daf261a918
           name: API-CurrentSessionThroughput
           type: DEPENDENT
@@ -443,7 +443,7 @@ zabbix_export:
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 4f839a79861e43ceb8e0388cffef0088
           name: API-cpu-load-average1
           type: DEPENDENT
@@ -1186,7 +1186,7 @@ zabbix_export:
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: dba89ec7ffd041298a79a65bc146fa89
           name: API-cpu-load-maximum1
           type: DEPENDENT
@@ -2182,7 +2182,7 @@ zabbix_export:
             - name: cmd
               value: '<show><system><info></info></system></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 698271029cc143f493313ac8ea133623
           name: API-IPaddress
           type: DEPENDENT
@@ -2329,7 +2329,7 @@ zabbix_export:
             - name: cmd
               value: '<show><system><resources></resources></system></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: 874b60158dd04f2b95c28591ca7972e4
           name: 'API-management plane'
           type: DEPENDENT
@@ -2716,7 +2716,7 @@ zabbix_export:
             - name: cmd
               value: '<show><system><environmentals><fans></fans></environmentals></system></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: cf8e352552b94777b9f5e027a3798b41
           name: 'API-Sensor Temperature Broadwell MP Core'
           type: DEPENDENT
@@ -2777,7 +2777,7 @@ zabbix_export:
             - name: cmd
               value: '<show><system><environmentals><thermal></thermal></environmentals></system></show>'
             - name: key
-              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
         - uuid: ac4f5b0a271e4e40bebbcf0d047111ac
           name: 'API-Sensor Temperature Switch'
           type: DEPENDENT
