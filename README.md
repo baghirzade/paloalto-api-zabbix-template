@@ -34,7 +34,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Palo Alto Firewalls Monitoring over API on Zabbix</h3>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
