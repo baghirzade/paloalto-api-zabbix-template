@@ -1,0 +1,4408 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 36bff6c29af64692839d077febfc7079
+      name: 'Templates/Network devices'
+  templates:
+    - uuid: 7b3c176b5632484a98e513184e0f3e94
+      template: 'Palo Alto by API'
+      name: 'Palo Alto by API'
+      groups:
+        - name: 'Templates/Network devices'
+      items:
+        - uuid: 5027e262ae68439a838cc1b7f09ea023
+          name: 'API-ae2.3007 ibytes mbps'
+          type: DEPENDENT
+          key: paloalto.ae2.3007.ibytes
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.ifnet.ifnet.entry.ibytes
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+            - type: MULTIPLIER
+              parameters:
+                - '1.0E-6'
+          master_item:
+            key: paloalto.ae2.3007.mbps
+        - uuid: 11ffd7945462421d8e12532dae10d3cf
+          name: 'API-ae2.3007 mbps'
+          type: HTTP_AGENT
+          key: paloalto.ae2.3007.mbps
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><counter><interface>ae2.3007</interface></counter></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: a667e59dc6ef46e99adf72e6c71bb99d
+          name: 'API-ae2.3007 obytes mbps'
+          type: DEPENDENT
+          key: paloalto.ae2.3007.obytes
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.ifnet.ifnet.entry.obytes
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+            - type: MULTIPLIER
+              parameters:
+                - '1.0E-6'
+          master_item:
+            key: paloalto.ae2.3007.mbps
+        - uuid: 217ff7c8c76949dba69b78a7b613f6da
+          name: 'API-Disk Utilization'
+          type: HTTP_AGENT
+          key: paloalto.disk.space
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.response.result
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><system><disk-space></disk-space></system></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 9a4ae96f8e194d62a49a8943f2a65afb
+          name: 'API-Disk Space Free'
+          type: DEPENDENT
+          key: paloalto.disk.space.free
+          delay: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value.match(/\/dev\/md2\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/);
+                  if (output) {
+                      return parseFloat(output[3]); // Return the used space for "/"
+                  }
+                  return null;
+          master_item:
+            key: paloalto.disk.space
+        - uuid: 5e4ee3cf137447718f8f4e6b8621d0e4
+          name: 'API-Disk Space Use%'
+          type: DEPENDENT
+          key: paloalto.disk.space.percentage.used
+          delay: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value.match(/\/dev\/md2\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/);
+                  if (output) {
+                      return parseFloat(output[4]); // Return the used space for "/"
+                  }
+                  return null;
+          master_item:
+            key: paloalto.disk.space
+        - uuid: 168291eb5fa64adaada07e0a57f92c6f
+          name: 'API-Disk Space Total'
+          type: DEPENDENT
+          key: paloalto.disk.space.total
+          delay: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value.match(/\/dev\/md2\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/);
+                  if (output) {
+                      return parseFloat(output[1]); // Return the used space for "/"
+                  }
+                  return null;
+          master_item:
+            key: paloalto.disk.space
+        - uuid: aff6cd55fa1a4999821b0bc33808ca98
+          name: 'API-Disk Space Used'
+          type: DEPENDENT
+          key: paloalto.disk.space.used
+          delay: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var output = value.match(/\/dev\/md2\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/);
+                  if (output) {
+                      return parseFloat(output[2]); // Return the used space for "/"
+                  }
+                  return null;
+          master_item:
+            key: paloalto.disk.space
+        - uuid: b3d440f5b55f40a0878302e8e46a4f9b
+          name: 'API-HA 1 Status'
+          type: DEPENDENT
+          key: paloalto.ha.1.status
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''peer-info''].[''conn-ha1''].[''conn-status'']'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: e419f09eeae2409885a11f781e96b366
+          name: 'API-HA 1b Status'
+          type: DEPENDENT
+          key: paloalto.ha.1b.status
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''peer-info''].[''conn-ha1-backup''].[''conn-status'']'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: 3e2a1c61b81b47dfb2d23ec2df159cff
+          name: 'API-HA 2 Status'
+          type: DEPENDENT
+          key: paloalto.ha.2.status
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''peer-info''].[''conn-ha2''].[''conn-status'']'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: c0e462081fd94cfc901d609ac2efd9fd
+          name: 'API-HA Mode'
+          type: DEPENDENT
+          key: paloalto.ha.mode
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.group.mode
+          master_item:
+            key: paloalto.high-availability
+        - uuid: 0b89d32169ef42f68859f2a3b5b26942
+          name: 'API-HA Peer State'
+          type: DEPENDENT
+          key: paloalto.ha.peer.state
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''peer-info''].state'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: 51dfb9011de04650bfd96d82e0940866
+          name: 'API-HA Peer Status'
+          type: DEPENDENT
+          key: paloalto.ha.peer.status
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''peer-info''].[''conn-status'']'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: c320c7e34e914e0eb1be044f5386507f
+          name: 'API-HA State'
+          type: DEPENDENT
+          key: paloalto.ha.state
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.group.[''local-info''].state'
+          master_item:
+            key: paloalto.high-availability
+        - uuid: 1757a1995dc847db933844209c4cafca
+          name: API-HA
+          type: HTTP_AGENT
+          key: paloalto.high-availability
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><high-availability><state></state></high-availability></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 2ba4b43097e04d8290dad05bfd693e75
+          name: API-processors-s1dp0
+          type: HTTP_AGENT
+          key: paloalto.processors.s1dp0
+          delay: 15s
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 2dcf457356b34198a2e8edf9bfbd47ef
+          name: API-ConnectionsPerSecond
+          type: DEPENDENT
+          key: paloalto.session.cps
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.cps
+          master_item:
+            key: paloalto.session.info
+        - uuid: 80ca7eb4d8df4c79beb3b5f99b84027a
+          name: 'API-Session Info'
+          type: HTTP_AGENT
+          key: paloalto.session.info
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><session><info></info></session></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: ecd8157995324450b7ad84daf261a918
+          name: API-CurrentSessionThroughput
+          type: DEPENDENT
+          key: paloalto.session.kbps
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''kbps'']'
+          master_item:
+            key: paloalto.session.info
+        - uuid: f76a91eb6952427989e27728838110df
+          name: API-NumberActiveSessions
+          type: DEPENDENT
+          key: paloalto.session.num-active
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''num-active'']'
+          master_item:
+            key: paloalto.session.info
+        - uuid: 851cec9de537459c846cc8a40a2f1be2
+          name: API-NumberMaxSessions
+          type: DEPENDENT
+          key: paloalto.session.num-max
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''num-max'']'
+          master_item:
+            key: paloalto.session.info
+        - uuid: 3bba80ea045e4a9ca64741d95def7395
+          name: API-NumberTCPSessions
+          type: DEPENDENT
+          key: paloalto.session.num-tcp
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''num-tcp'']'
+          master_item:
+            key: paloalto.session.info
+        - uuid: 47ffd0b5f65b4234b3a2c9ff3de9dd91
+          name: API-NumberUDPSessions
+          type: DEPENDENT
+          key: paloalto.session.num-udp
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''num-udp'']'
+          master_item:
+            key: paloalto.session.info
+        - uuid: 639dea04838144b3ab68863d428b41f3
+          name: API-PacketsPerSecond
+          type: DEPENDENT
+          key: paloalto.session.pps
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.pps
+          master_item:
+            key: paloalto.session.info
+        - uuid: 9e9eb9fc366741a29465dde9da676de9
+          name: API-processors-s1dp0-aho_result
+          type: DEPENDENT
+          key: paloalto.system.aho_result
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.aho_result'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+        - uuid: 88caea1373f1439389b27fca83d8582f
+          name: API-cpu-load-average
+          type: HTTP_AGENT
+          key: paloalto.system.cpu-load-average
+          delay: 15s
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 4f839a79861e43ceb8e0388cffef0088
+          name: API-cpu-load-average1
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.1
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[0].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0002
+          name: API-cpu-load-average2
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.2
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[1].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0003
+          name: API-cpu-load-average3
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.3
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[2].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0004
+          name: API-cpu-load-average4
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.4
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[3].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0005
+          name: API-cpu-load-average5
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.5
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[4].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0006
+          name: API-cpu-load-average6
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.6
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[5].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0007
+          name: API-cpu-load-average7
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.7
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[6].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0008
+          name: API-cpu-load-average8
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.8
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[7].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0009
+          name: API-cpu-load-average9
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.9
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[8].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0010
+          name: API-cpu-load-average10
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.10
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[9].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0011
+          name: API-cpu-load-average11
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.11
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[10].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0012
+          name: API-cpu-load-average12
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.12
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[11].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0013
+          name: API-cpu-load-average13
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.13
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[12].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0014
+          name: API-cpu-load-average14
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.14
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[13].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0015
+          name: API-cpu-load-average15
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.15
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[14].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0016
+          name: API-cpu-load-average16
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.16
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[15].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0017
+          name: API-cpu-load-average17
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.17
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[16].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0018
+          name: API-cpu-load-average18
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.18
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[17].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0019
+          name: API-cpu-load-average19
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.19
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[18].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0020
+          name: API-cpu-load-average20
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.20
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[19].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0021
+          name: API-cpu-load-average21
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.21
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[20].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0022
+          name: API-cpu-load-average22
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.22
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[21].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0023
+          name: API-cpu-load-average23
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.23
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[22].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0024
+          name: API-cpu-load-average24
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.24
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[23].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0025
+          name: API-cpu-load-average25
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.25
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[24].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0026
+          name: API-cpu-load-average26
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.26
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[25].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0027
+          name: API-cpu-load-average27
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.27
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[26].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0028
+          name: API-cpu-load-average28
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.28
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[27].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0029
+          name: API-cpu-load-average29
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.29
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[28].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0030
+          name: API-cpu-load-average30
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.30
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[29].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0031
+          name: API-cpu-load-average31
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.31
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[30].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0032
+          name: API-cpu-load-average32
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.32
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[31].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0033
+          name: API-cpu-load-average33
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.33
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[32].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0034
+          name: API-cpu-load-average34
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.34
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[33].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0035
+          name: API-cpu-load-average35
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.35
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[34].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0036
+          name: API-cpu-load-average36
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.36
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[35].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0037
+          name: API-cpu-load-average37
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.37
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[36].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0038
+          name: API-cpu-load-average38
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.38
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[37].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0039
+          name: API-cpu-load-average39
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.39
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[38].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0040
+          name: API-cpu-load-average40
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.40
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[39].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0041
+          name: API-cpu-load-average41
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.41
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[40].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0042
+          name: API-cpu-load-average42
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.42
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[41].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0043
+          name: API-cpu-load-average43
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.43
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[42].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0044
+          name: API-cpu-load-average44
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.44
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[43].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0045
+          name: API-cpu-load-average45
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.45
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[44].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0046
+          name: API-cpu-load-average46
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.46
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[45].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0047
+          name: API-cpu-load-average47
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.47
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[46].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: 4f839a79861e43ceb8e0388cffef0048
+          name: API-cpu-load-average48
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-average.48
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-average''].entry[47].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-average
+        - uuid: fadb9b3ac6674ed382402c70c0eb0fbb
+          name: API-cpu-load-maximum
+          type: HTTP_AGENT
+          key: paloalto.system.cpu-load-maximum
+          delay: 15s
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: dba89ec7ffd041298a79a65bc146fa89
+          name: API-cpu-load-maximum1
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.1
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[0].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa02
+          name: API-cpu-load-maximum2
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.2
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[1].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa03
+          name: API-cpu-load-maximum3
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.3
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[2].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa04
+          name: API-cpu-load-maximum4
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.4
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[3].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa05
+          name: API-cpu-load-maximum5
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.5
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[4].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa06
+          name: API-cpu-load-maximum6
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.6
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[5].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa07
+          name: API-cpu-load-maximum7
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.7
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[6].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa08
+          name: API-cpu-load-maximum8
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.8
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[7].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa09
+          name: API-cpu-load-maximum9
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.9
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[8].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa10
+          name: API-cpu-load-maximum10
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.10
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[9].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa11
+          name: API-cpu-load-maximum11
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.11
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[10].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa12
+          name: API-cpu-load-maximum12
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.12
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[11].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa13
+          name: API-cpu-load-maximum13
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.13
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[12].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa14
+          name: API-cpu-load-maximum14
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.14
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[13].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa15
+          name: API-cpu-load-maximum15
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.15
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[14].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa16
+          name: API-cpu-load-maximum16
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.16
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[15].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa17
+          name: API-cpu-load-maximum17
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.17
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[16].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa18
+          name: API-cpu-load-maximum18
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.18
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[17].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa19
+          name: API-cpu-load-maximum19
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.19
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[18].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa20
+          name: API-cpu-load-maximum20
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.20
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[19].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa21
+          name: API-cpu-load-maximum21
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.21
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[20].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa22
+          name: API-cpu-load-maximum22
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.22
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[21].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa23
+          name: API-cpu-load-maximum23
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.23
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[22].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa24
+          name: API-cpu-load-maximum24
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.24
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[23].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa25
+          name: API-cpu-load-maximum25
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.25
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[24].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa26
+          name: API-cpu-load-maximum26
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.26
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[25].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa27
+          name: API-cpu-load-maximum27
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.27
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[26].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa28
+          name: API-cpu-load-maximum28
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.28
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[27].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa29
+          name: API-cpu-load-maximum29
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.29
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[28].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa30
+          name: API-cpu-load-maximum30
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.30
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[29].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa31
+          name: API-cpu-load-maximum31
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.31
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[30].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa32
+          name: API-cpu-load-maximum32
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.32
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[31].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa33
+          name: API-cpu-load-maximum33
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.33
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[32].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa34
+          name: API-cpu-load-maximum34
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.34
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[33].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa35
+          name: API-cpu-load-maximum35
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.35
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[34].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa36
+          name: API-cpu-load-maximum36
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.36
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[35].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa37
+          name: API-cpu-load-maximum37
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.37
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[36].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa38
+          name: API-cpu-load-maximum38
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.38
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[37].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa39
+          name: API-cpu-load-maximum39
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.39
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[38].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa40
+          name: API-cpu-load-maximum40
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.40
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[39].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa41
+          name: API-cpu-load-maximum41
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.41
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[40].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa42
+          name: API-cpu-load-maximum42
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.42
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[41].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa43
+          name: API-cpu-load-maximum43
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.43
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[42].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa44
+          name: API-cpu-load-maximum44
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.44
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[43].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa45
+          name: API-cpu-load-maximum45
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.45
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[44].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa46
+          name: API-cpu-load-maximum46
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.46
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[45].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa47
+          name: API-cpu-load-maximum47
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.47
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[46].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: dba89ec7ffd041298a79a65bc146fa48
+          name: API-cpu-load-maximum48
+          type: DEPENDENT
+          key: paloalto.system.cpu-load-maximum.48
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.[''cpu-load-maximum''].entry[47].value'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.system.cpu-load-maximum
+        - uuid: 083f6cabba614dd8ac772d35be2e3518
+          name: API-processors-s1dp0-dfa_result
+          type: DEPENDENT
+          key: paloalto.system.dfa_result
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.dfa_result'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 114a603e529149388cb7d7a909f9c6d5
+              expression: '(last(/Palo Alto by API/paloalto.system.dfa_result)>95)'
+              name: 'Disaster CPU Usage Alert dfa_result'
+            - uuid: 1e73528ed4c7445598fa990e2d612431
+              expression: '(last(/Palo Alto by API/paloalto.system.dfa_result)>90)'
+              name: 'High CPU Usage Alert dfa_result'
+              priority: HIGH
+        - uuid: 2dfd4a129dbb4a54927371102fda28f3
+          name: API-processors-s1dp0-flow_ctrl
+          type: DEPENDENT
+          key: paloalto.system.flow_ctrl
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_ctrl'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 63ba7ced7985486cbf3250ea78450808
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_ctrl)>95)'
+              name: 'Disaster CPU Usage Alert flow_ctrl'
+              priority: DISASTER
+            - uuid: 2443cff8e8154f2ab38e56e9cc47d347
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_ctrl)>90)'
+              name: 'High CPU Usage Alert flow_ctrl'
+        - uuid: 8d91daf0532447b782b9c0971b83b335
+          name: API-processors-s1dp0-flow_fastpath
+          type: DEPENDENT
+          key: paloalto.system.flow_fastpath
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_fastpath'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: bd772f153a9342e4ac4718196b5efe76
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_fastpath)>95)'
+              name: 'Disaster CPU Usage Alert flow_fastpath'
+              priority: DISASTER
+            - uuid: 4e47289ba7c44a858f761c48e7b9266d
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_fastpath)>90)'
+              name: 'High CPU Usage Alert flow_fastpath'
+              priority: HIGH
+        - uuid: 7822338ba2e545c3b52dff7c06114858
+          name: API-processors-s1dp0-flow_forwarding
+          type: DEPENDENT
+          key: paloalto.system.flow_forwarding
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_forwarding'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: f9c487893dbc4e94a88033ed5db11d68
+              expression: 'last(/Palo Alto by API/paloalto.system.flow_forwarding)>95'
+              name: 'Disaster CPU Usage Alert flow_forwarding'
+              priority: DISASTER
+            - uuid: 7ab8c0969b0f4e228e08073312d8b5eb
+              expression: 'last(/Palo Alto by API/paloalto.system.flow_forwarding)>90'
+              name: 'High CPU Usage Alert flow_forwarding'
+              priority: HIGH
+        - uuid: 99e57e49e48d42f69a0bfeef963bdd51
+          name: API-processors-s1dp0-flow_host
+          type: DEPENDENT
+          key: paloalto.system.flow_host
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_host'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 139183d956004b1999423ef43391ea15
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_host)>95)'
+              name: 'Disaster CPU Usage Alert flow_host'
+              priority: DISASTER
+            - uuid: 7d3ccbf881fd414b8bb0a12cee4f7d34
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_host)>90)'
+              name: 'High CPU Usage Alert flow_host'
+              priority: HIGH
+        - uuid: b2752c4627fc4612ad029a501d786fb2
+          name: API-processors-s1dp0-flow_lookup
+          type: DEPENDENT
+          key: paloalto.system.flow_lookup
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_lookup'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 09e217e5eef141208e3905e7f6156fdd
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_lookup)>95)'
+              name: 'Disaster CPU Usage Alert flow_lookup'
+              priority: DISASTER
+            - uuid: 383d381ff65f45b7ae29191aa4842c13
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_lookup)>90)'
+              name: 'High CPU Usage Alert flow_lookup'
+              priority: HIGH
+        - uuid: dd920ef7f8ae408eb517f5441c88a7a2
+          name: API-processors-s1dp0-flow_mgmt
+          type: DEPENDENT
+          key: paloalto.system.flow_mgmt
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_mgmt'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 72cdc8347215499084cb275468f17ab7
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_mgmt)>95)'
+              name: 'Disaster CPU Usage Alert flow_mgmt'
+              priority: DISASTER
+            - uuid: d52e78b866b64480b99b88752d38acb9
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_mgmt)>90)'
+              name: 'High CPU Usage Alert flow_mgmt'
+              priority: HIGH
+        - uuid: 8c5ac2bdbc4743569deecb7e921fbf8e
+          name: API-processors-s1dp0-flow_np
+          type: DEPENDENT
+          key: paloalto.system.flow_np
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_np'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 05eded0814b8455999b2f844c7a066f1
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_np)>95)'
+              name: 'Disaster CPU Usage Alert flow_np'
+              priority: DISASTER
+            - uuid: 6257f047ee664b7793a15045f1f4bff7
+              expression: '(last(/Palo Alto by API/paloalto.system.flow_np)>90)'
+              name: 'High CPU Usage Alert flow_np'
+              priority: HIGH
+        - uuid: 1ee0124fc9e94ad1a2751a90d44a79a4
+          name: API-processors-s1dp0-flow_slowpath
+          type: DEPENDENT
+          key: paloalto.system.flow_slowpath
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.flow_slowpath'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 5c76bc35581546b7b5225ece65f7b16a
+              expression: 'last(/Palo Alto by API/paloalto.system.flow_slowpath)>95'
+              name: 'Disaster CPU Usage Alert flow_slowpath'
+              priority: DISASTER
+            - uuid: a81a3fb96c0e43c7803126f6bcf07bee
+              expression: 'last(/Palo Alto by API/paloalto.system.flow_slowpath)>90'
+              name: 'High CPU Usage Alert flow_slowpath'
+              priority: HIGH
+        - uuid: 2e664a5ef73a432d9996e3d6a01a5100
+          name: API-processors-s1dp0-fpga_result
+          type: DEPENDENT
+          key: paloalto.system.fpga_result
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.fpga_result'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: a52f9f3dc8784570aa8e8014b7536257
+              expression: '(last(/Palo Alto by API/paloalto.system.fpga_result)>95)'
+              name: 'Disaster CPU Usage Alert fpga_result'
+              priority: DISASTER
+            - uuid: 7d4d40f0ad64409d9a84421bde3b263f
+              expression: '(last(/Palo Alto by API/paloalto.system.fpga_result)>90)'
+              name: 'High CPU Usage Alert fpga_result'
+              priority: HIGH
+        - uuid: 3c413deda7cb4f08b7c6abc33aa18baf
+          name: API-Hostname
+          type: DEPENDENT
+          key: paloalto.system.hostname
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.system.hostname
+          master_item:
+            key: paloalto.system.info
+        - uuid: 768928d568b04fecbf950980c429936b
+          name: 'API-System Info'
+          type: HTTP_AGENT
+          key: paloalto.system.info
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><system><info></info></system></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 698271029cc143f493313ac8ea133623
+          name: API-IPaddress
+          type: DEPENDENT
+          key: paloalto.system.ipaddress
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.system.[''ip-address'']'
+          master_item:
+            key: paloalto.system.info
+        - uuid: f02b791b0c724aa7bd7cd9882e2b7836
+          name: API-processors-s1dp0-lwm
+          type: DEPENDENT
+          key: paloalto.system.lwm
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.lwm'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: cd849a35a7b8426ab57628469c7d6d90
+              expression: '(last(/Palo Alto by API/paloalto.system.lwm)>95)'
+              name: 'Disaster CPU Usage Alert lwm'
+              priority: DISASTER
+            - uuid: da2682442d5e434db781dcd61fe63fd2
+              expression: '(last(/Palo Alto by API/paloalto.system.lwm)>90)'
+              name: 'High CPU Usage Alert lwm'
+              priority: HIGH
+        - uuid: ab05f36513034deaa542710676a461ec
+          name: API-Model
+          type: DEPENDENT
+          key: paloalto.system.model
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.system.model
+          master_item:
+            key: paloalto.system.info
+        - uuid: 20ab727ad7bc4f7082dfb8cf81691851
+          name: API-processors-s1dp0-module_internal
+          type: DEPENDENT
+          key: paloalto.system.module_internal
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.module_internal'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: e6638a44cbab48db8375b6936784c0d3
+              expression: '(last(/Palo Alto by API/paloalto.system.module_internal)>95)'
+              name: 'Disaster CPU Usage Alert module_internal'
+              priority: DISASTER
+            - uuid: 4a96945015914bf3ac95b0db26b55051
+              expression: '(last(/Palo Alto by API/paloalto.system.module_internal)>90)'
+              name: 'High CPU Usage Alert module_internal'
+              priority: HIGH
+        - uuid: 2c64d0e296f94808828f71819ffea5bc
+          name: API-processors-s1dp0-nac_result
+          type: DEPENDENT
+          key: paloalto.system.nac_result
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.nac_result'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: bf4707b662684f458fed26e7adb66d14
+              expression: '(last(/Palo Alto by API/paloalto.system.nac_result)>95)'
+              name: 'Disaster CPU Usage Alert nac_result'
+              priority: DISASTER
+            - uuid: da6008a8d060464daaaf85beb8a4c75f
+              expression: '(last(/Palo Alto by API/paloalto.system.nac_result)>90)'
+              name: 'High CPU Usage Alert nac_result'
+              priority: HIGH
+        - uuid: eda0490afcb04775b4171065fd10d287
+          name: API-processors-s1dp0-pktlog_forwarding
+          type: DEPENDENT
+          key: paloalto.system.pktlog_forwarding
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.pktlog_forwarding'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: 7663bf8ffeb24295a34aa7f22884e212
+              expression: '(last(/Palo Alto by API/paloalto.system.pktlog_forwarding)>95)'
+              name: 'Disaster CPU Usage Alert pktlog_forwarding'
+              priority: DISASTER
+            - uuid: d7e86d52f58046c8ac47e0784875daae
+              expression: '(last(/Palo Alto by API/paloalto.system.pktlog_forwarding)>90)'
+              name: 'High CPU Usage Alert pktlog_forwarding'
+              priority: HIGH
+        - uuid: a1e13a8efb044506991e45a5aad62f9b
+          name: 'API-System Resources'
+          type: HTTP_AGENT
+          key: paloalto.system.resources
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.response.result
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><system><resources></resources></system></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: 874b60158dd04f2b95c28591ca7972e4
+          name: 'API-management plane'
+          type: DEPENDENT
+          key: paloalto.system.resources.management.cpu
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Extract the %Cpu(s) line from the CDATA
+                  var cdata = value.match(/%Cpu\(s\):\s+([\d.]+)\s+us,\s+([\d.]+)\s+sy/);
+                  
+                  if (cdata) {
+                      return parseFloat(cdata[1]);  // Returns the user CPU percentage (us)
+                  }
+                  
+                  return null;
+          master_item:
+            key: paloalto.system.resources
+        - uuid: d5b7c42cfe9c4d30a89e7671af3cbcb8
+          name: 'API-Memory Free'
+          type: DEPENDENT
+          key: paloalto.system.resources.memory.free
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Extract the free memory from the MiB Mem line
+                  var memory = value.match(/MiB Mem\s*:\s*([\d.]+)\s*total,\s*([\d.]+)\s*free,\s*([\d.]+)\s*used/);
+                  
+                  if (memory && memory.length > 2) {
+                      return parseFloat(memory[2]);  // Returns free memory in MiB
+                  }
+                  
+                  return null;  // Return null if the pattern does not match
+          master_item:
+            key: paloalto.system.resources
+        - uuid: e78153692b9d4fbf9cada83a239b02a7
+          name: 'API-Memory Total'
+          type: DEPENDENT
+          key: paloalto.system.resources.memory.total
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Extract the total memory from the MiB Mem line
+                  var memory = value.match(/MiB Mem\s*:\s*([\d.]+)\s*total,\s*([\d.]+)\s*free,\s*([\d.]+)\s*used/);
+                  
+                  if (memory && memory.length > 1) {
+                      return parseFloat(memory[1]);  // Returns total memory in MiB
+                  }
+                  
+                  return null;  // Return null if the pattern does not match
+          master_item:
+            key: paloalto.system.resources
+        - uuid: e2c0a525613b49aa817e6e86a8e921c2
+          name: 'API-Memory Usage'
+          type: DEPENDENT
+          key: paloalto.system.resources.memory.used
+          delay: '0'
+          trends: '0'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  // Adjust the regular expression to handle the MiB format and floating-point numbers
+                  var memory = value.match(/MiB Mem\s*:\s*([\d.]+)\s*total,\s*([\d.]+)\s*free,\s*([\d.]+)\s*used/);
+                  
+                  if (memory && memory.length > 3) {
+                      return parseFloat(memory[3]);  // Returns used memory (in MiB)
+                  }
+                  
+                  return null;  // Return null if the pattern does not match
+          master_item:
+            key: paloalto.system.resources
+        - uuid: d4d8920050cf451a98dfc8a2c0f7ccfa
+          name: API-SWversion
+          type: DEPENDENT
+          key: paloalto.system.swversion
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.system.[''sw-version'']'
+          master_item:
+            key: paloalto.system.info
+        - uuid: fc4ce6c4b6184848b8641610a94a09bf
+          name: API-Uptime
+          type: DEPENDENT
+          key: paloalto.system.uptime
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.system.uptime
+          master_item:
+            key: paloalto.system.info
+        - uuid: 5b7e1bd27e1e4e038dbf483de0f0f8e3
+          name: API-processors-s1dp0-zip_result
+          type: DEPENDENT
+          key: paloalto.system.zip_result
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.[''resource-monitor''].[''data-processors''].s1dp0.second.task.zip_result'
+            - type: REGEX
+              parameters:
+                - (\d+)
+                - \1
+          master_item:
+            key: paloalto.processors.s1dp0
+          triggers:
+            - uuid: ea09ca6036a54b7ebfc06b97b50942f7
+              expression: '(last(/Palo Alto by API/paloalto.system.zip_result)>95)'
+              name: 'Disaster CPU Usage Alert zip_result'
+            - uuid: 5c9a8559549c4ff48075ec8713ee5ee1
+              expression: '(last(/Palo Alto by API/paloalto.system.zip_result)>90)'
+              name: 'High CPU Usage Alert zip_result'
+              priority: HIGH
+        - uuid: ac4f5b0a271e4e40bebbcf0d047196ac
+          name: 'API-Sensor Temperature Bottom Front'
+          type: DEPENDENT
+          key: paloalto.thermal.Bottom.Front
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[4].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: 26dd67e5c8aa4225a36e927b58147682
+          name: 'API-Sensor Temperature Bottom Rear'
+          type: DEPENDENT
+          key: paloalto.thermal.Bottom.Rear
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[11].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047192ac
+          name: 'API-Sensor Temperature CP'
+          type: DEPENDENT
+          key: paloalto.thermal.cp
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[1].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047191ac
+          name: 'API-Sensor Temperature CP Core'
+          type: DEPENDENT
+          key: paloalto.thermal.CP.Core
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[6].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047194ac
+          name: 'API-Sensor Temperature DP0/CE'
+          type: DEPENDENT
+          key: paloalto.thermal.DP0.CE
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[2].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047193ac
+          name: 'API-Sensor Temperature DP0 Core'
+          type: DEPENDENT
+          key: paloalto.thermal.DP0.Core
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[3].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047197ac
+          name: 'API-Sensor Temperature DP1/DP2'
+          type: DEPENDENT
+          key: paloalto.thermal.DP1.DP2
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[10].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: af9371661138436189b77cfb878c7881
+          name: 'API-Fan #1.1 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.1.1
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[0].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 197a0eefc9e045c68d03d7fa0198a344
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.1)="True"'
+              name: 'Palo Alto Fan #1.1 RPM Status'
+              priority: HIGH
+        - uuid: a6078027abe3423c832d352401b05fcb
+          name: 'API-Fan #1.2 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.1.2
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[1].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 47f24f2b002d465b9604ad3e0d409c6d
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.2)="True"'
+              name: 'Palo Alto Fan #1.2 RPM Status'
+              priority: HIGH
+        - uuid: ab69e0ec37fd4ea7906fbdd15d1bad75
+          name: 'API-Fan #1.3 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.1.3
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[2].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 4b11c7a65151431686483c4d3dd87c19
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.3)="True"'
+              name: 'Palo Alto Fan #1.3 RPM Status'
+              priority: HIGH
+        - uuid: 7775b91844ae4977a718769198810aa3
+          name: 'API-Fan #1.4 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.1.4
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[3].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 4857cd2f7d224150a628bb0773dfa7d9
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.4)="True"'
+              name: 'Palo Alto Fan #1.4 RPM Status'
+              priority: HIGH
+        - uuid: b980848360304053aa267f28445414cc
+          name: 'API-Fan #2.1 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.2.1
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[4].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 871faa729a264e3590fddc6401dbb174
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.1)="True"'
+              name: 'Palo Alto Fan #2.1 RPM Status'
+              priority: HIGH
+        - uuid: 1a0df5a745f741eab2325f3c13df09d0
+          name: 'API-Fan #2.2 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.2.2
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[5].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 70317dfaa29b43c6b8c81954581cb941
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.2)="True"'
+              name: 'Palo Alto Fan #2.2 RPM Status'
+              priority: HIGH
+        - uuid: 362fb69ecabb41b893b5af67b19b9a95
+          name: 'API-Fan #2.3 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.2.3
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[6].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: 0388e989bd3249fa8c7daa85f2f885b7
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.3)="True"'
+              name: 'Palo Alto Fan #2.3 RPM Status'
+              priority: HIGH
+        - uuid: ac2a54e43a3c4ee1b848ff54503e6104
+          name: 'API-Fan #2.4 RPM'
+          type: DEPENDENT
+          key: paloalto.thermal.fan.2.4
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.fan.Slot1.entry[7].alarm'
+          master_item:
+            key: paloalto.thermal.fans
+          triggers:
+            - uuid: ff358c3fd91e41fda44b36d4dce7ff14
+              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.4)="True"'
+              name: 'Palo Alto Fan #2.4 RPM Status'
+              priority: HIGH
+        - uuid: 54854094892a41178df0ff3658bd684e
+          name: API-Fans
+          type: HTTP_AGENT
+          key: paloalto.thermal.fans
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><system><environmentals><fans></fans></environmentals></system></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: cf8e352552b94777b9f5e027a3798b41
+          name: 'API-Sensor Temperature Broadwell MP Core'
+          type: DEPENDENT
+          key: paloalto.thermal.mp.core
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.response.result.thermal.Slot0.entry.DegreesC
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047199ac
+          name: 'API-Sensor Temperature NP'
+          type: DEPENDENT
+          key: paloalto.thermal.np
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[0].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047198ac
+          name: 'API-Sensor Temperature NP Core'
+          type: DEPENDENT
+          key: paloalto.thermal.NP.Core
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[8].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: c4aadb3b9a7947e3a79d913dfa621f68
+          name: 'API-System Temperature'
+          type: HTTP_AGENT
+          key: paloalto.thermal.status
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            - type: XML_TO_JSON
+              parameters:
+                - ''
+            - type: STR_REPLACE
+              parameters:
+                - '@'
+                - ''
+          url: 'https://192.168.0.1/api/'
+          query_fields:
+            - name: type
+              value: op
+            - name: cmd
+              value: '<show><system><environmentals><thermal></thermal></environmentals></system></show>'
+            - name: key
+              value: LUFRPT1lUFV2d2NjMzM2SHZRWXI5d0N6TXRKczZGVDg9NVF5dU50ZDUxZDE2Rmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFh0c2RmM1Bmd0V5Qw==
+        - uuid: ac4f5b0a271e4e40bebbcf0d047111ac
+          name: 'API-Sensor Temperature Switch'
+          type: DEPENDENT
+          key: paloalto.thermal.Switch
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[5].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047110ac
+          name: 'API-Sensor Temperature Switch Core'
+          type: DEPENDENT
+          key: paloalto.thermal.Switch.Core
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[7].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+        - uuid: ac4f5b0a271e4e40bebbcf0d047112ac
+          name: 'API-Sensor Temperature Top Front'
+          type: DEPENDENT
+          key: paloalto.thermal.Top.Front
+          delay: '0'
+          trends: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$.response.result.thermal.Slot1.entry[4].DegreesC'
+          master_item:
+            key: paloalto.thermal.status
+      dashboards:
+        - uuid: 4c5240b3b7cd4e329fcecfd1069a7fa0
+          name: 'Global view'
+          pages:
+            - widgets:
+                - type: item
+                  name: Uptime
+                  width: '36'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.system.uptime
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'Software Version'
+                  'y': '3'
+                  width: '14'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.system.swversion
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'HA State'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.state
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: svggraph
+                  name: 'Processor Data Plane'
+                  'y': '9'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.data_set_label
+                      value: dfa_result
+                    - type: INTEGER
+                      name: ds.0.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: API-processors-s1dp0-dfa_result
+                    - type: INTEGER
+                      name: ds.0.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.1.color
+                      value: FFD54F
+                    - type: INTEGER
+                      name: ds.1.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: API-processors-s1dp0-flow_ctrl
+                    - type: INTEGER
+                      name: ds.1.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.2.color
+                      value: 0EC9AC
+                    - type: INTEGER
+                      name: ds.2.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.2.items.0
+                      value: API-processors-s1dp0-flow_fastpath
+                    - type: INTEGER
+                      name: ds.2.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.3.color
+                      value: 524BBC
+                    - type: INTEGER
+                      name: ds.3.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.3.items.0
+                      value: API-processors-s1dp0-flow_forwarding
+                    - type: INTEGER
+                      name: ds.3.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.4.color
+                      value: ED1248
+                    - type: INTEGER
+                      name: ds.4.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.4.items.0
+                      value: API-processors-s1dp0-flow_host
+                    - type: INTEGER
+                      name: ds.4.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.5.color
+                      value: D1E754
+                    - type: INTEGER
+                      name: ds.5.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.5.items.0
+                      value: API-processors-s1dp0-flow_lookup
+                    - type: INTEGER
+                      name: ds.5.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.6.color
+                      value: 2AB5FF
+                    - type: INTEGER
+                      name: ds.6.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.6.items.0
+                      value: API-processors-s1dp0-flow_mgmt
+                    - type: INTEGER
+                      name: ds.6.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.7.color
+                      value: 385CC7
+                    - type: INTEGER
+                      name: ds.7.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.7.items.0
+                      value: API-processors-s1dp0-flow_np
+                    - type: INTEGER
+                      name: ds.7.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.8.color
+                      value: EC1594
+                    - type: INTEGER
+                      name: ds.8.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.8.items.0
+                      value: API-processors-s1dp0-flow_slowpath
+                    - type: INTEGER
+                      name: ds.8.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.9.color
+                      value: BAE37D
+                    - type: INTEGER
+                      name: ds.9.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.9.items.0
+                      value: API-processors-s1dp0-flow_slowpath
+                    - type: INTEGER
+                      name: ds.9.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.10.color
+                      value: 6AC8FF
+                    - type: INTEGER
+                      name: ds.10.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.10.items.0
+                      value: API-processors-s1dp0-fpga_result
+                    - type: INTEGER
+                      name: ds.10.transparency
+                      value: '7'
+                    - type: STRING
+                      name: ds.11.color
+                      value: EE2B29
+                    - type: INTEGER
+                      name: ds.11.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.11.items.0
+                      value: API-processors-s1dp0-lwm
+                    - type: INTEGER
+                      name: ds.11.transparency
+                      value: '7'
+                    - type: STRING
+                      name: ds.12.color
+                      value: 3CA20D
+                    - type: INTEGER
+                      name: ds.12.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.12.items.0
+                      value: API-processors-s1dp0-module_internal
+                    - type: INTEGER
+                      name: ds.12.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.13.color
+                      value: 6F4BBC
+                    - type: INTEGER
+                      name: ds.13.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.13.items.0
+                      value: API-processors-s1dp0-nac_result
+                    - type: INTEGER
+                      name: ds.13.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.14.color
+                      value: 00A1FF
+                    - type: INTEGER
+                      name: ds.14.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.14.items.0
+                      value: API-processors-s1dp0-pktlog_forwarding
+                    - type: INTEGER
+                      name: ds.14.transparency
+                      value: '0'
+                    - type: STRING
+                      name: ds.15.color
+                      value: F3601B
+                    - type: INTEGER
+                      name: ds.15.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.15.items.0
+                      value: API-processors-s1dp0-zip_result
+                    - type: INTEGER
+                      name: ds.15.transparency
+                      value: '0'
+                    - type: STRING
+                      name: lefty_static_units
+                      value: '%'
+                    - type: INTEGER
+                      name: lefty_units
+                      value: '1'
+                    - type: STRING
+                      name: reference
+                      value: PFKIQ
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: graph
+                  'y': '14'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        name: 'Processor Management Plane'
+                    - type: STRING
+                      name: reference
+                      value: CYXQO
+                - type: svggraph
+                  name: 'Disk Usage'
+                  'y': '19'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'API-Disk Space Total'
+                    - type: STRING
+                      name: ds.1.color
+                      value: FFD54F
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: 'API-Disk Space Used'
+                    - type: STRING
+                      name: ds.2.color
+                      value: 0EC9AC
+                    - type: STRING
+                      name: ds.2.items.0
+                      value: 'API-Disk Space Free'
+                    - type: STRING
+                      name: lefty_static_units
+                      value: Gb
+                    - type: INTEGER
+                      name: lefty_units
+                      value: '1'
+                    - type: STRING
+                      name: reference
+                      value: KWUJH
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: item
+                  name: 'HA Peer State'
+                  x: '12'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.peer.state
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'IP Address'
+                  x: '14'
+                  'y': '3'
+                  width: '22'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: desc_color
+                      value: FFBF00
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.system.ipaddress
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                    - type: STRING
+                      name: value_color
+                      value: 80FF00
+                - type: item
+                  name: 'HA Peer Status'
+                  x: '24'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.peer.status
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: Hostname
+                  x: '36'
+                  width: '36'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.system.hostname
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'HA Mode'
+                  x: '36'
+                  'y': '3'
+                  width: '22'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.mode
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'HA 1 Status'
+                  x: '36'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.1.status
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: svggraph
+                  name: 'CPU Load Avarage'
+                  x: '36'
+                  'y': '9'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: INTEGER
+                      name: ds.0.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: API-cpu-load-average1
+                    - type: STRING
+                      name: ds.0.items.1
+                      value: API-cpu-load-average2
+                    - type: STRING
+                      name: ds.0.items.2
+                      value: API-cpu-load-average3
+                    - type: STRING
+                      name: ds.0.items.3
+                      value: API-cpu-load-average4
+                    - type: STRING
+                      name: ds.0.items.4
+                      value: API-cpu-load-average5
+                    - type: STRING
+                      name: ds.0.items.5
+                      value: API-cpu-load-average6
+                    - type: STRING
+                      name: ds.0.items.6
+                      value: API-cpu-load-average7
+                    - type: STRING
+                      name: ds.0.items.7
+                      value: API-cpu-load-average8
+                    - type: STRING
+                      name: ds.0.items.8
+                      value: API-cpu-load-average9
+                    - type: STRING
+                      name: ds.0.items.9
+                      value: API-cpu-load-average10
+                    - type: STRING
+                      name: ds.0.items.10
+                      value: API-cpu-load-average11
+                    - type: STRING
+                      name: ds.0.items.11
+                      value: API-cpu-load-average12
+                    - type: STRING
+                      name: ds.0.items.12
+                      value: API-cpu-load-average13
+                    - type: STRING
+                      name: ds.0.items.13
+                      value: API-cpu-load-average14
+                    - type: STRING
+                      name: ds.0.items.14
+                      value: API-cpu-load-average15
+                    - type: STRING
+                      name: ds.0.items.15
+                      value: API-cpu-load-average16
+                    - type: STRING
+                      name: ds.0.items.16
+                      value: API-cpu-load-average17
+                    - type: STRING
+                      name: ds.0.items.17
+                      value: API-cpu-load-average18
+                    - type: STRING
+                      name: ds.0.items.18
+                      value: API-cpu-load-average19
+                    - type: STRING
+                      name: ds.0.items.19
+                      value: API-cpu-load-average20
+                    - type: STRING
+                      name: ds.0.items.20
+                      value: API-cpu-load-average21
+                    - type: STRING
+                      name: ds.0.items.21
+                      value: API-cpu-load-average22
+                    - type: STRING
+                      name: ds.0.items.22
+                      value: API-cpu-load-average23
+                    - type: STRING
+                      name: ds.0.items.23
+                      value: API-cpu-load-average24
+                    - type: STRING
+                      name: ds.0.items.24
+                      value: API-cpu-load-average25
+                    - type: STRING
+                      name: ds.0.items.25
+                      value: API-cpu-load-average26
+                    - type: STRING
+                      name: ds.0.items.26
+                      value: API-cpu-load-average27
+                    - type: STRING
+                      name: ds.0.items.27
+                      value: API-cpu-load-average28
+                    - type: STRING
+                      name: ds.0.items.28
+                      value: API-cpu-load-average29
+                    - type: STRING
+                      name: ds.0.items.29
+                      value: API-cpu-load-average30
+                    - type: STRING
+                      name: ds.0.items.30
+                      value: API-cpu-load-average31
+                    - type: STRING
+                      name: ds.0.items.31
+                      value: API-cpu-load-average32
+                    - type: STRING
+                      name: ds.0.items.32
+                      value: API-cpu-load-average33
+                    - type: STRING
+                      name: ds.0.items.33
+                      value: API-cpu-load-average34
+                    - type: STRING
+                      name: ds.0.items.34
+                      value: API-cpu-load-average35
+                    - type: STRING
+                      name: ds.0.items.35
+                      value: API-cpu-load-average36
+                    - type: STRING
+                      name: ds.0.items.36
+                      value: API-cpu-load-average37
+                    - type: STRING
+                      name: ds.0.items.37
+                      value: API-cpu-load-average38
+                    - type: STRING
+                      name: ds.0.items.38
+                      value: API-cpu-load-average39
+                    - type: STRING
+                      name: ds.0.items.39
+                      value: API-cpu-load-average40
+                    - type: STRING
+                      name: ds.0.items.40
+                      value: API-cpu-load-average41
+                    - type: STRING
+                      name: ds.0.items.41
+                      value: API-cpu-load-average42
+                    - type: STRING
+                      name: ds.0.items.42
+                      value: API-cpu-load-average43
+                    - type: STRING
+                      name: ds.0.items.43
+                      value: API-cpu-load-average44
+                    - type: STRING
+                      name: ds.0.items.44
+                      value: API-cpu-load-average45
+                    - type: STRING
+                      name: ds.0.items.45
+                      value: API-cpu-load-average46
+                    - type: STRING
+                      name: ds.0.items.46
+                      value: API-cpu-load-average47
+                    - type: STRING
+                      name: ds.0.items.47
+                      value: API-cpu-load-average48
+                    - type: INTEGER
+                      name: ds.0.transparency
+                      value: '0'
+                    - type: STRING
+                      name: lefty_static_units
+                      value: '%'
+                    - type: INTEGER
+                      name: lefty_units
+                      value: '1'
+                    - type: STRING
+                      name: reference
+                      value: ULBQW
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: 'CPU Load Maximum'
+                  x: '36'
+                  'y': '14'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF0000
+                    - type: INTEGER
+                      name: ds.0.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: API-cpu-load-maximum1
+                    - type: STRING
+                      name: ds.0.items.1
+                      value: API-cpu-load-maximum2
+                    - type: STRING
+                      name: ds.0.items.2
+                      value: API-cpu-load-maximum3
+                    - type: STRING
+                      name: ds.0.items.3
+                      value: API-cpu-load-maximum4
+                    - type: STRING
+                      name: ds.0.items.4
+                      value: API-cpu-load-maximum5
+                    - type: STRING
+                      name: ds.0.items.5
+                      value: API-cpu-load-maximum6
+                    - type: STRING
+                      name: ds.0.items.6
+                      value: API-cpu-load-maximum7
+                    - type: STRING
+                      name: ds.0.items.7
+                      value: API-cpu-load-maximum8
+                    - type: STRING
+                      name: ds.0.items.8
+                      value: API-cpu-load-maximum9
+                    - type: STRING
+                      name: ds.0.items.9
+                      value: API-cpu-load-maximum10
+                    - type: STRING
+                      name: ds.0.items.10
+                      value: API-cpu-load-maximum11
+                    - type: STRING
+                      name: ds.0.items.11
+                      value: API-cpu-load-maximum12
+                    - type: STRING
+                      name: ds.0.items.12
+                      value: API-cpu-load-maximum13
+                    - type: STRING
+                      name: ds.0.items.13
+                      value: API-cpu-load-maximum14
+                    - type: STRING
+                      name: ds.0.items.14
+                      value: API-cpu-load-maximum15
+                    - type: STRING
+                      name: ds.0.items.15
+                      value: API-cpu-load-maximum16
+                    - type: STRING
+                      name: ds.0.items.16
+                      value: API-cpu-load-maximum17
+                    - type: STRING
+                      name: ds.0.items.17
+                      value: API-cpu-load-maximum18
+                    - type: STRING
+                      name: ds.0.items.18
+                      value: API-cpu-load-maximum19
+                    - type: STRING
+                      name: ds.0.items.19
+                      value: API-cpu-load-maximum20
+                    - type: STRING
+                      name: ds.0.items.20
+                      value: API-cpu-load-maximum21
+                    - type: STRING
+                      name: ds.0.items.21
+                      value: API-cpu-load-maximum22
+                    - type: STRING
+                      name: ds.0.items.22
+                      value: API-cpu-load-maximum23
+                    - type: STRING
+                      name: ds.0.items.23
+                      value: API-cpu-load-maximum24
+                    - type: STRING
+                      name: ds.0.items.24
+                      value: API-cpu-load-maximum25
+                    - type: STRING
+                      name: ds.0.items.25
+                      value: API-cpu-load-maximum26
+                    - type: STRING
+                      name: ds.0.items.26
+                      value: API-cpu-load-maximum27
+                    - type: STRING
+                      name: ds.0.items.27
+                      value: API-cpu-load-maximum28
+                    - type: STRING
+                      name: ds.0.items.28
+                      value: API-cpu-load-maximum29
+                    - type: STRING
+                      name: ds.0.items.29
+                      value: API-cpu-load-maximum30
+                    - type: STRING
+                      name: ds.0.items.30
+                      value: API-cpu-load-maximum31
+                    - type: STRING
+                      name: ds.0.items.31
+                      value: API-cpu-load-maximum32
+                    - type: STRING
+                      name: ds.0.items.32
+                      value: API-cpu-load-maximum33
+                    - type: STRING
+                      name: ds.0.items.33
+                      value: API-cpu-load-maximum34
+                    - type: STRING
+                      name: ds.0.items.34
+                      value: API-cpu-load-maximum35
+                    - type: STRING
+                      name: ds.0.items.35
+                      value: API-cpu-load-maximum36
+                    - type: STRING
+                      name: ds.0.items.36
+                      value: API-cpu-load-maximum37
+                    - type: STRING
+                      name: ds.0.items.37
+                      value: API-cpu-load-maximum38
+                    - type: STRING
+                      name: ds.0.items.38
+                      value: API-cpu-load-maximum39
+                    - type: STRING
+                      name: ds.0.items.39
+                      value: API-cpu-load-maximum40
+                    - type: STRING
+                      name: ds.0.items.40
+                      value: API-cpu-load-maximum41
+                    - type: STRING
+                      name: ds.0.items.41
+                      value: API-cpu-load-maximum42
+                    - type: STRING
+                      name: ds.0.items.42
+                      value: API-cpu-load-maximum43
+                    - type: STRING
+                      name: ds.0.items.43
+                      value: API-cpu-load-maximum44
+                    - type: STRING
+                      name: ds.0.items.44
+                      value: API-cpu-load-maximum45
+                    - type: STRING
+                      name: ds.0.items.45
+                      value: API-cpu-load-maximum46
+                    - type: STRING
+                      name: ds.0.items.46
+                      value: API-cpu-load-maximum47
+                    - type: STRING
+                      name: ds.0.items.47
+                      value: API-cpu-load-maximum48
+                    - type: INTEGER
+                      name: ds.0.transparency
+                      value: '0'
+                    - type: INTEGER
+                      name: ds.0.width
+                      value: '2'
+                    - type: STRING
+                      name: lefty_static_units
+                      value: '%'
+                    - type: INTEGER
+                      name: lefty_units
+                      value: '1'
+                    - type: STRING
+                      name: reference
+                      value: AWPLZ
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: item
+                  name: 'HA 1b Status'
+                  x: '48'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.1b.status
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: Model
+                  x: '58'
+                  'y': '3'
+                  width: '14'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.system.model
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+                - type: item
+                  name: 'HA 2 Status'
+                  x: '60'
+                  'y': '6'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Palo Alto by API'
+                        key: paloalto.ha.2.status
+                    - type: INTEGER
+                      name: rf_rate
+                      value: '10'
+  graphs:
+    - uuid: 56052e1ee54a49a9ad94cfd58a5b2bc1
+      name: 'Active & Max Sessions'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.session.num-active
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.session.num-max
+    - uuid: 6c747b3b4a8b4e0495ac5755603ac785
+      name: 'API-ae2.3007 ibytes & obytes'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.ae2.3007.ibytes
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.ae2.3007.obytes
+    - uuid: ea5331cf72c64e2dbc49c9108597fa26
+      name: 'CPU Load Avarage'
+      graph_items:
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.2
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.3
+        - sortorder: '3'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.4
+        - sortorder: '4'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.5
+        - sortorder: '5'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.6
+        - sortorder: '6'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.7
+        - sortorder: '7'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.8
+        - sortorder: '8'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.9
+        - sortorder: '9'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.10
+        - sortorder: '10'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.11
+        - sortorder: '11'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.12
+        - sortorder: '12'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.13
+        - sortorder: '13'
+          color: 7EC25C
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.14
+        - sortorder: '14'
+          color: 3165D5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.15
+        - sortorder: '15'
+          color: 79A277
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.16
+        - sortorder: '16'
+          color: AA73DE
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.17
+        - sortorder: '17'
+          color: FD5434
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.18
+        - sortorder: '18'
+          color: F21C3E
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.19
+        - sortorder: '19'
+          color: 87AC4D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.20
+        - sortorder: '20'
+          color: E89DF4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.21
+        - sortorder: '21'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.22
+        - sortorder: '22'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.23
+        - sortorder: '23'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.24
+        - sortorder: '24'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.25
+        - sortorder: '25'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.26
+        - sortorder: '26'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.27
+        - sortorder: '27'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.28
+        - sortorder: '28'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.29
+        - sortorder: '29'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.30
+        - sortorder: '30'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.31
+        - sortorder: '31'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.32
+        - sortorder: '32'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.33
+        - sortorder: '33'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.34
+        - sortorder: '34'
+          color: 7EC25C
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.35
+        - sortorder: '35'
+          color: 3165D5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.36
+        - sortorder: '36'
+          color: 79A277
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.37
+        - sortorder: '37'
+          color: AA73DE
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.38
+        - sortorder: '38'
+          color: FD5434
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.39
+        - sortorder: '39'
+          color: F21C3E
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.40
+        - sortorder: '40'
+          color: 87AC4D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.41
+        - sortorder: '41'
+          color: E89DF4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.42
+        - sortorder: '42'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.43
+        - sortorder: '43'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.44
+        - sortorder: '44'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.45
+        - sortorder: '45'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.46
+        - sortorder: '46'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.47
+        - sortorder: '47'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-average.48
+    - uuid: 7f856d2294c74b298e2dec936621a700
+      name: 'CPU Load Maximum'
+      graph_items:
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.2
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.3
+        - sortorder: '3'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.4
+        - sortorder: '4'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.5
+        - sortorder: '5'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.6
+        - sortorder: '6'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.7
+        - sortorder: '7'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.8
+        - sortorder: '8'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.9
+        - sortorder: '9'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.10
+        - sortorder: '10'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.11
+        - sortorder: '11'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.12
+        - sortorder: '12'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.13
+        - sortorder: '13'
+          color: 7EC25C
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.14
+        - sortorder: '14'
+          color: 3165D5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.15
+        - sortorder: '15'
+          color: 79A277
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.16
+        - sortorder: '16'
+          color: AA73DE
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.17
+        - sortorder: '17'
+          color: FD5434
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.18
+        - sortorder: '18'
+          color: F21C3E
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.19
+        - sortorder: '19'
+          color: 87AC4D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.20
+        - sortorder: '20'
+          color: E89DF4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.21
+        - sortorder: '21'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.22
+        - sortorder: '22'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.23
+        - sortorder: '23'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.24
+        - sortorder: '24'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.25
+        - sortorder: '25'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.26
+        - sortorder: '26'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.27
+        - sortorder: '27'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.28
+        - sortorder: '28'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.29
+        - sortorder: '29'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.30
+        - sortorder: '30'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.31
+        - sortorder: '31'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.32
+        - sortorder: '32'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.33
+        - sortorder: '33'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.34
+        - sortorder: '34'
+          color: 7EC25C
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.35
+        - sortorder: '35'
+          color: 3165D5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.36
+        - sortorder: '36'
+          color: 79A277
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.37
+        - sortorder: '37'
+          color: AA73DE
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.38
+        - sortorder: '38'
+          color: FD5434
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.39
+        - sortorder: '39'
+          color: F21C3E
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.40
+        - sortorder: '40'
+          color: 87AC4D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.41
+        - sortorder: '41'
+          color: E89DF4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.42
+        - sortorder: '42'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.43
+        - sortorder: '43'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.44
+        - sortorder: '44'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.45
+        - sortorder: '45'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.46
+        - sortorder: '46'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.47
+        - sortorder: '47'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.cpu-load-maximum.48
+    - uuid: 66baba22818840808b10cae5825912fd
+      name: 'Memory Utilization'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.resources.memory.free
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.resources.memory.used
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.resources.memory.total
+    - uuid: 94bbe609cd5f474bbc13e8183636c2dd
+      name: 'Palo Alto Sensor Temperature'
+      graph_items:
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.mp.core
+        - sortorder: '3'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.CP.Core
+        - sortorder: '4'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.cp
+        - sortorder: '5'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.DP0.Core
+        - sortorder: '6'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.DP0.CE
+        - sortorder: '7'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.DP1.DP2
+        - sortorder: '8'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.NP.Core
+        - sortorder: '9'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.np
+        - sortorder: '10'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.Switch.Core
+        - sortorder: '11'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.Switch
+        - sortorder: '12'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.thermal.Top.Front
+    - uuid: 44694609641b4c9d87a52dedfceb593b
+      name: 'Processor Management Plane'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.resources.management.cpu
+    - uuid: a07aa9ddb9044729b99f4797c423602c
+      name: 'System Resource Monitor'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.aho_result
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.dfa_result
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_ctrl
+        - sortorder: '3'
+          color: F7941D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_fastpath
+        - sortorder: '4'
+          color: FC6EA3
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_forwarding
+        - sortorder: '5'
+          color: 6C59DC
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_host
+        - sortorder: '6'
+          color: C7A72D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_lookup
+        - sortorder: '7'
+          color: BA2A5D
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_mgmt
+        - sortorder: '8'
+          color: F230E0
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_np
+        - sortorder: '9'
+          color: 5CCD18
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.flow_slowpath
+        - sortorder: '10'
+          color: BB2A02
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.fpga_result
+        - sortorder: '11'
+          color: AC41A5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.lwm
+        - sortorder: '12'
+          color: 89ABF8
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.module_internal
+        - sortorder: '13'
+          color: 7EC25C
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.nac_result
+        - sortorder: '14'
+          color: 3165D5
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.pktlog_forwarding
+        - sortorder: '15'
+          color: 79A277
+          calc_fnc: ALL
+          item:
+            host: 'Palo Alto by API'
+            key: paloalto.system.zip_result
