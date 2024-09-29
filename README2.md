@@ -1,3 +1,4 @@
+
 # Zabbix Palo Alto Firewall API Monitoring Template
 
 This template is designed to monitor Palo Alto firewalls through Zabbix using the API. It allows for comprehensive monitoring of Palo Alto devices from A to Z without the need to write custom scripts.
@@ -20,7 +21,7 @@ The API allows for more detailed data collection, enabling better tracking of ne
 To use this template, the following requirements must be met:
 
 - Palo Alto device (with API support)
-- Zabbix Server v6.4 or newer
+- Zabbix Server v6.0 or newer
 - Zabbix Agent
 - API username and password
 - Palo Alto API key
@@ -53,3 +54,31 @@ To use this template, the following requirements must be met:
 1. Obtain the API key from your Palo Alto device:
    ```bash
    curl -k -X POST "https://<firewall-ip>/api/?type=keygen&user=<username>&password=<password>"
+   ```
+2. Add the obtained API key to the Zabbix host:
+   - Go to the **Macros** section.
+   - **Macro Name**: `{PALO_API_KEY}`
+   - **Value**: Enter your API key here.
+
+## Step 5: Start Monitoring
+
+Once the host and template are correctly configured, monitoring of your Palo Alto firewall will begin automatically.
+
+## Data and Metrics
+
+This template can monitor the following data:
+
+- CPU and memory usage
+- Interface status and statistics
+- Security policy-related statistics
+- Session information
+- Tracked security events
+- Traffic analysis
+
+## Contributing
+
+If you would like to expand the functionality of this template or suggest additional monitoring parameters, feel free to make changes as you see fit. I welcome your feedback and contributions!
+
+## License
+
+This project is distributed under an open-source license. For more information, please refer to the license file.
