@@ -10,6 +10,8 @@
   </p>
 </div>
 
+![plot](./images/paloalto.jpg)
+
 ## Why Monitor with the API?
 
 Traditionally, SNMP has been widely used for monitoring, but certain Palo Alto models and versions encounter compatibility issues. This can result in gaps during monitoring with SNMP. To address this problem, the Palo Alto API interface provides more accurate and stable monitoring.
