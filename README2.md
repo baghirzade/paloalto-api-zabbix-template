@@ -20,7 +20,7 @@ The API allows for more detailed data collection, enabling better tracking of ne
 
 To use this template, the following requirements must be met:
 
-- Palo Alto device (with API support)
+- Palo Alto device (with API support panos v10 or newer)
 - Zabbix Server v6.0 or newer
 - Zabbix Agent
 - API username and password
