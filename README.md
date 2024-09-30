@@ -66,7 +66,7 @@ To use this template, the following requirements must be met:
    ```
 :eight_spoked_asterisk: Add the obtained API key to the Zabbix host:
    - Go to the **Macros** section.
-   - **Macro Name**: `{PALO_API_KEY}`
+   - **Macro Names**: `{PALO_API_KEY}` `{$INTERFACE_NAME}` `{$FIREWALL_IP}`
    - **Value**: Enter your API key here.
 
 ## Step 5: Start Monitoring :point_left:
