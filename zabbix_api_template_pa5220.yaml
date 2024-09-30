@@ -5,15 +5,15 @@ zabbix_export:
       name: 'Templates/Network devices'
   templates:
     - uuid: 7b3c176b5632484a98e513184e0f3e94
-      template: 'Palo Alto by API'
-      name: 'Palo Alto by API'
+      template: 'Palo Alto PA5220 by API'
+      name: 'Palo Alto PA5220 by API'
       groups:
         - name: 'Templates/Network devices'
       items:
         - uuid: 5027e262ae68439a838cc1b7f09ea023
-          name: 'API-ae2.3007 ibytes mbps'
+          name: 'API-{$INTERFACE_NAME} ibytes mbps'
           type: DEPENDENT
-          key: paloalto.ae2.3007.ibytes
+          key: paloalto.counter.interface.ibytes
           delay: '0'
           trends: '0'
           value_type: FLOAT
@@ -31,11 +31,11 @@ zabbix_export:
               parameters:
                 - '1.0E-6'
           master_item:
-            key: paloalto.ae2.3007.mbps
+            key: paloalto.counter.interface.mbps
         - uuid: 11ffd7945462421d8e12532dae10d3cf
-          name: 'API-ae2.3007 mbps'
+          name: 'API-{$INTERFACE_NAME} mbps'
           type: HTTP_AGENT
-          key: paloalto.ae2.3007.mbps
+          key: paloalto.counter.interface.mbps
           trends: '0'
           value_type: CHAR
           preprocessing:
@@ -46,18 +46,18 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
-              value: '<show><counter><interface>ae2.3007</interface></counter></show>'
+              value: '<show><counter><interface>{$INTERFACE_NAME}</interface></counter></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: a667e59dc6ef46e99adf72e6c71bb99d
-          name: 'API-ae2.3007 obytes mbps'
+          name: 'API-{$INTERFACE_NAME} obytes mbps'
           type: DEPENDENT
-          key: paloalto.ae2.3007.obytes
+          key: paloalto.counter.interface.obytes
           delay: '0'
           trends: '0'
           preprocessing:
@@ -74,7 +74,7 @@ zabbix_export:
               parameters:
                 - '1.0E-6'
           master_item:
-            key: paloalto.ae2.3007.mbps
+            key: paloalto.counter.interface.mbps
         - uuid: 217ff7c8c76949dba69b78a7b613f6da
           name: 'API-Disk Utilization'
           type: HTTP_AGENT
@@ -92,14 +92,14 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.response.result
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><system><disk-space></disk-space></system></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 9a4ae96f8e194d62a49a8943f2a65afb
           name: 'API-Disk Space Free'
           type: DEPENDENT
@@ -269,14 +269,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><high-availability><state></state></high-availability></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 2ba4b43097e04d8290dad05bfd693e75
           name: API-processors-s1dp0
           type: HTTP_AGENT
@@ -292,14 +292,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 2dcf457356b34198a2e8edf9bfbd47ef
           name: API-ConnectionsPerSecond
           type: DEPENDENT
@@ -326,14 +326,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><session><info></info></session></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: ecd8157995324450b7ad84daf261a918
           name: API-CurrentSessionThroughput
           type: DEPENDENT
@@ -436,14 +436,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 4f839a79861e43ceb8e0388cffef0088
           name: API-cpu-load-average1
           type: DEPENDENT
@@ -1179,14 +1179,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: dba89ec7ffd041298a79a65bc146fa89
           name: API-cpu-load-maximum1
           type: DEPENDENT
@@ -1925,10 +1925,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 114a603e529149388cb7d7a909f9c6d5
-              expression: '(last(/Palo Alto by API/paloalto.system.dfa_result)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.dfa_result)>95)'
               name: 'Disaster CPU Usage Alert dfa_result'
+              priority: DISASTER
             - uuid: 1e73528ed4c7445598fa990e2d612431
-              expression: '(last(/Palo Alto by API/paloalto.system.dfa_result)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.dfa_result)>90)'
               name: 'High CPU Usage Alert dfa_result'
               priority: HIGH
         - uuid: 2dfd4a129dbb4a54927371102fda28f3
@@ -1949,12 +1950,13 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 63ba7ced7985486cbf3250ea78450808
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_ctrl)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_ctrl)>95)'
               name: 'Disaster CPU Usage Alert flow_ctrl'
               priority: DISASTER
             - uuid: 2443cff8e8154f2ab38e56e9cc47d347
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_ctrl)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_ctrl)>90)'
               name: 'High CPU Usage Alert flow_ctrl'
+              priority: HIGH
         - uuid: 8d91daf0532447b782b9c0971b83b335
           name: API-processors-s1dp0-flow_fastpath
           type: DEPENDENT
@@ -1973,11 +1975,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: bd772f153a9342e4ac4718196b5efe76
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_fastpath)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_fastpath)>95)'
               name: 'Disaster CPU Usage Alert flow_fastpath'
               priority: DISASTER
             - uuid: 4e47289ba7c44a858f761c48e7b9266d
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_fastpath)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_fastpath)>90)'
               name: 'High CPU Usage Alert flow_fastpath'
               priority: HIGH
         - uuid: 7822338ba2e545c3b52dff7c06114858
@@ -1997,11 +1999,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: f9c487893dbc4e94a88033ed5db11d68
-              expression: 'last(/Palo Alto by API/paloalto.system.flow_forwarding)>95'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.system.flow_forwarding)>95'
               name: 'Disaster CPU Usage Alert flow_forwarding'
               priority: DISASTER
             - uuid: 7ab8c0969b0f4e228e08073312d8b5eb
-              expression: 'last(/Palo Alto by API/paloalto.system.flow_forwarding)>90'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.system.flow_forwarding)>90'
               name: 'High CPU Usage Alert flow_forwarding'
               priority: HIGH
         - uuid: 99e57e49e48d42f69a0bfeef963bdd51
@@ -2021,11 +2023,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 139183d956004b1999423ef43391ea15
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_host)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_host)>95)'
               name: 'Disaster CPU Usage Alert flow_host'
               priority: DISASTER
             - uuid: 7d3ccbf881fd414b8bb0a12cee4f7d34
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_host)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_host)>90)'
               name: 'High CPU Usage Alert flow_host'
               priority: HIGH
         - uuid: b2752c4627fc4612ad029a501d786fb2
@@ -2045,11 +2047,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 09e217e5eef141208e3905e7f6156fdd
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_lookup)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_lookup)>95)'
               name: 'Disaster CPU Usage Alert flow_lookup'
               priority: DISASTER
             - uuid: 383d381ff65f45b7ae29191aa4842c13
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_lookup)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_lookup)>90)'
               name: 'High CPU Usage Alert flow_lookup'
               priority: HIGH
         - uuid: dd920ef7f8ae408eb517f5441c88a7a2
@@ -2069,11 +2071,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 72cdc8347215499084cb275468f17ab7
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_mgmt)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_mgmt)>95)'
               name: 'Disaster CPU Usage Alert flow_mgmt'
               priority: DISASTER
             - uuid: d52e78b866b64480b99b88752d38acb9
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_mgmt)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_mgmt)>90)'
               name: 'High CPU Usage Alert flow_mgmt'
               priority: HIGH
         - uuid: 8c5ac2bdbc4743569deecb7e921fbf8e
@@ -2093,11 +2095,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 05eded0814b8455999b2f844c7a066f1
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_np)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_np)>95)'
               name: 'Disaster CPU Usage Alert flow_np'
               priority: DISASTER
             - uuid: 6257f047ee664b7793a15045f1f4bff7
-              expression: '(last(/Palo Alto by API/paloalto.system.flow_np)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.flow_np)>90)'
               name: 'High CPU Usage Alert flow_np'
               priority: HIGH
         - uuid: 1ee0124fc9e94ad1a2751a90d44a79a4
@@ -2117,11 +2119,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 5c76bc35581546b7b5225ece65f7b16a
-              expression: 'last(/Palo Alto by API/paloalto.system.flow_slowpath)>95'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.system.flow_slowpath)>95'
               name: 'Disaster CPU Usage Alert flow_slowpath'
               priority: DISASTER
             - uuid: a81a3fb96c0e43c7803126f6bcf07bee
-              expression: 'last(/Palo Alto by API/paloalto.system.flow_slowpath)>90'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.system.flow_slowpath)>90'
               name: 'High CPU Usage Alert flow_slowpath'
               priority: HIGH
         - uuid: 2e664a5ef73a432d9996e3d6a01a5100
@@ -2141,11 +2143,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: a52f9f3dc8784570aa8e8014b7536257
-              expression: '(last(/Palo Alto by API/paloalto.system.fpga_result)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.fpga_result)>95)'
               name: 'Disaster CPU Usage Alert fpga_result'
               priority: DISASTER
             - uuid: 7d4d40f0ad64409d9a84421bde3b263f
-              expression: '(last(/Palo Alto by API/paloalto.system.fpga_result)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.fpga_result)>90)'
               name: 'High CPU Usage Alert fpga_result'
               priority: HIGH
         - uuid: 3c413deda7cb4f08b7c6abc33aa18baf
@@ -2175,14 +2177,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><system><info></info></system></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 698271029cc143f493313ac8ea133623
           name: API-IPaddress
           type: DEPENDENT
@@ -2213,11 +2215,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: cd849a35a7b8426ab57628469c7d6d90
-              expression: '(last(/Palo Alto by API/paloalto.system.lwm)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.lwm)>95)'
               name: 'Disaster CPU Usage Alert lwm'
               priority: DISASTER
             - uuid: da2682442d5e434db781dcd61fe63fd2
-              expression: '(last(/Palo Alto by API/paloalto.system.lwm)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.lwm)>90)'
               name: 'High CPU Usage Alert lwm'
               priority: HIGH
         - uuid: ab05f36513034deaa542710676a461ec
@@ -2250,11 +2252,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: e6638a44cbab48db8375b6936784c0d3
-              expression: '(last(/Palo Alto by API/paloalto.system.module_internal)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.module_internal)>95)'
               name: 'Disaster CPU Usage Alert module_internal'
               priority: DISASTER
             - uuid: 4a96945015914bf3ac95b0db26b55051
-              expression: '(last(/Palo Alto by API/paloalto.system.module_internal)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.module_internal)>90)'
               name: 'High CPU Usage Alert module_internal'
               priority: HIGH
         - uuid: 2c64d0e296f94808828f71819ffea5bc
@@ -2274,11 +2276,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: bf4707b662684f458fed26e7adb66d14
-              expression: '(last(/Palo Alto by API/paloalto.system.nac_result)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.nac_result)>95)'
               name: 'Disaster CPU Usage Alert nac_result'
               priority: DISASTER
             - uuid: da6008a8d060464daaaf85beb8a4c75f
-              expression: '(last(/Palo Alto by API/paloalto.system.nac_result)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.nac_result)>90)'
               name: 'High CPU Usage Alert nac_result'
               priority: HIGH
         - uuid: eda0490afcb04775b4171065fd10d287
@@ -2298,11 +2300,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: 7663bf8ffeb24295a34aa7f22884e212
-              expression: '(last(/Palo Alto by API/paloalto.system.pktlog_forwarding)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.pktlog_forwarding)>95)'
               name: 'Disaster CPU Usage Alert pktlog_forwarding'
               priority: DISASTER
             - uuid: d7e86d52f58046c8ac47e0784875daae
-              expression: '(last(/Palo Alto by API/paloalto.system.pktlog_forwarding)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.pktlog_forwarding)>90)'
               name: 'High CPU Usage Alert pktlog_forwarding'
               priority: HIGH
         - uuid: a1e13a8efb044506991e45a5aad62f9b
@@ -2322,14 +2324,14 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.response.result
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><system><resources></resources></system></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: 874b60158dd04f2b95c28591ca7972e4
           name: 'API-management plane'
           type: DEPENDENT
@@ -2454,10 +2456,11 @@ zabbix_export:
             key: paloalto.processors.s1dp0
           triggers:
             - uuid: ea09ca6036a54b7ebfc06b97b50942f7
-              expression: '(last(/Palo Alto by API/paloalto.system.zip_result)>95)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.zip_result)>95)'
               name: 'Disaster CPU Usage Alert zip_result'
+              priority: DISASTER
             - uuid: 5c9a8559549c4ff48075ec8713ee5ee1
-              expression: '(last(/Palo Alto by API/paloalto.system.zip_result)>90)'
+              expression: '(last(/Palo Alto PA5220 by API/paloalto.system.zip_result)>90)'
               name: 'High CPU Usage Alert zip_result'
               priority: HIGH
         - uuid: ac4f5b0a271e4e40bebbcf0d047196ac
@@ -2566,7 +2569,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 197a0eefc9e045c68d03d7fa0198a344
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.1)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.1.1)="True"'
               name: 'Palo Alto Fan #1.1 RPM Status'
               priority: HIGH
         - uuid: a6078027abe3423c832d352401b05fcb
@@ -2584,7 +2587,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 47f24f2b002d465b9604ad3e0d409c6d
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.2)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.1.2)="True"'
               name: 'Palo Alto Fan #1.2 RPM Status'
               priority: HIGH
         - uuid: ab69e0ec37fd4ea7906fbdd15d1bad75
@@ -2602,7 +2605,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 4b11c7a65151431686483c4d3dd87c19
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.3)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.1.3)="True"'
               name: 'Palo Alto Fan #1.3 RPM Status'
               priority: HIGH
         - uuid: 7775b91844ae4977a718769198810aa3
@@ -2620,7 +2623,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 4857cd2f7d224150a628bb0773dfa7d9
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.1.4)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.1.4)="True"'
               name: 'Palo Alto Fan #1.4 RPM Status'
               priority: HIGH
         - uuid: b980848360304053aa267f28445414cc
@@ -2638,7 +2641,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 871faa729a264e3590fddc6401dbb174
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.1)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.2.1)="True"'
               name: 'Palo Alto Fan #2.1 RPM Status'
               priority: HIGH
         - uuid: 1a0df5a745f741eab2325f3c13df09d0
@@ -2656,7 +2659,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 70317dfaa29b43c6b8c81954581cb941
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.2)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.2.2)="True"'
               name: 'Palo Alto Fan #2.2 RPM Status'
               priority: HIGH
         - uuid: 362fb69ecabb41b893b5af67b19b9a95
@@ -2674,7 +2677,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: 0388e989bd3249fa8c7daa85f2f885b7
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.3)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.2.3)="True"'
               name: 'Palo Alto Fan #2.3 RPM Status'
               priority: HIGH
         - uuid: ac2a54e43a3c4ee1b848ff54503e6104
@@ -2692,7 +2695,7 @@ zabbix_export:
             key: paloalto.thermal.fans
           triggers:
             - uuid: ff358c3fd91e41fda44b36d4dce7ff14
-              expression: 'last(/Palo Alto by API/paloalto.thermal.fan.2.4)="True"'
+              expression: 'last(/Palo Alto PA5220 by API/paloalto.thermal.fan.2.4)="True"'
               name: 'Palo Alto Fan #2.4 RPM Status'
               priority: HIGH
         - uuid: 54854094892a41178df0ff3658bd684e
@@ -2709,14 +2712,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><system><environmentals><fans></fans></environmentals></system></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: cf8e352552b94777b9f5e027a3798b41
           name: 'API-Sensor Temperature Broadwell MP Core'
           type: DEPENDENT
@@ -2770,14 +2773,14 @@ zabbix_export:
               parameters:
                 - '@'
                 - ''
-          url: 'https://192.168.0.1/api/'
+          url: 'https://{$FIREWALL_IP}/api/'
           query_fields:
             - name: type
               value: op
             - name: cmd
               value: '<show><system><environmentals><thermal></thermal></environmentals></system></show>'
             - name: key
-              value: LUFRP5T1lUFV2d2NjMzM2SHZRWXI5d0N62TXRKczZGVDg9NVF5dU505nfcKd8A3SjdRmc2RW1DOUZtL0dKcklaRkZmOExGekp0Lyt6cnQ1WDVYZXpud1VaNFhjiu0c2RmM1Bmd0V5Qw==
+              value: '{$PALO_API_KEY}'
         - uuid: ac4f5b0a271e4e40bebbcf0d047111ac
           name: 'API-Sensor Temperature Switch'
           type: DEPENDENT
@@ -2830,7 +2833,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.system.uptime
                     - type: INTEGER
                       name: rf_rate
@@ -2844,7 +2847,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.system.swversion
                     - type: INTEGER
                       name: rf_rate
@@ -2858,7 +2861,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.state
                     - type: INTEGER
                       name: rf_rate
@@ -3084,7 +3087,7 @@ zabbix_export:
                     - type: GRAPH
                       name: graphid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         name: 'Processor Management Plane'
                     - type: STRING
                       name: reference
@@ -3135,7 +3138,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.peer.state
                     - type: INTEGER
                       name: rf_rate
@@ -3153,7 +3156,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.system.ipaddress
                     - type: INTEGER
                       name: rf_rate
@@ -3171,7 +3174,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.peer.status
                     - type: INTEGER
                       name: rf_rate
@@ -3185,7 +3188,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.system.hostname
                     - type: INTEGER
                       name: rf_rate
@@ -3200,7 +3203,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.mode
                     - type: INTEGER
                       name: rf_rate
@@ -3215,7 +3218,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.1.status
                     - type: INTEGER
                       name: rf_rate
@@ -3577,7 +3580,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.1b.status
                     - type: INTEGER
                       name: rf_rate
@@ -3592,7 +3595,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.system.model
                     - type: INTEGER
                       name: rf_rate
@@ -3607,7 +3610,7 @@ zabbix_export:
                     - type: ITEM
                       name: itemid.0
                       value:
-                        host: 'Palo Alto by API'
+                        host: 'Palo Alto PA5220 by API'
                         key: paloalto.ha.2.status
                     - type: INTEGER
                       name: rf_rate
@@ -3619,13 +3622,13 @@ zabbix_export:
         - color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.session.num-active
         - sortorder: '1'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.session.num-max
     - uuid: 6c747b3b4a8b4e0495ac5755603ac785
       name: 'API-ae2.3007 ibytes & obytes'
@@ -3633,14 +3636,14 @@ zabbix_export:
         - color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
-            key: paloalto.ae2.3007.ibytes
+            host: 'Palo Alto PA5220 by API'
+            key: paloalto.counter.interface.ibytes
         - sortorder: '1'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
-            key: paloalto.ae2.3007.obytes
+            host: 'Palo Alto PA5220 by API'
+            key: paloalto.counter.interface.obytes
     - uuid: ea5331cf72c64e2dbc49c9108597fa26
       name: 'CPU Load Avarage'
       graph_items:
@@ -3648,283 +3651,283 @@ zabbix_export:
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.2
         - sortorder: '2'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.3
         - sortorder: '3'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.4
         - sortorder: '4'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.5
         - sortorder: '5'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.6
         - sortorder: '6'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.7
         - sortorder: '7'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.8
         - sortorder: '8'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.9
         - sortorder: '9'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.10
         - sortorder: '10'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.11
         - sortorder: '11'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.12
         - sortorder: '12'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.13
         - sortorder: '13'
           color: 7EC25C
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.14
         - sortorder: '14'
           color: 3165D5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.15
         - sortorder: '15'
           color: 79A277
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.16
         - sortorder: '16'
           color: AA73DE
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.17
         - sortorder: '17'
           color: FD5434
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.18
         - sortorder: '18'
           color: F21C3E
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.19
         - sortorder: '19'
           color: 87AC4D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.20
         - sortorder: '20'
           color: E89DF4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.21
         - sortorder: '21'
           color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.22
         - sortorder: '22'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.23
         - sortorder: '23'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.24
         - sortorder: '24'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.25
         - sortorder: '25'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.26
         - sortorder: '26'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.27
         - sortorder: '27'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.28
         - sortorder: '28'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.29
         - sortorder: '29'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.30
         - sortorder: '30'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.31
         - sortorder: '31'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.32
         - sortorder: '32'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.33
         - sortorder: '33'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.34
         - sortorder: '34'
           color: 7EC25C
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.35
         - sortorder: '35'
           color: 3165D5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.36
         - sortorder: '36'
           color: 79A277
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.37
         - sortorder: '37'
           color: AA73DE
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.38
         - sortorder: '38'
           color: FD5434
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.39
         - sortorder: '39'
           color: F21C3E
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.40
         - sortorder: '40'
           color: 87AC4D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.41
         - sortorder: '41'
           color: E89DF4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.42
         - sortorder: '42'
           color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.43
         - sortorder: '43'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.44
         - sortorder: '44'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.45
         - sortorder: '45'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.46
         - sortorder: '46'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.47
         - sortorder: '47'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-average.48
     - uuid: 7f856d2294c74b298e2dec936621a700
       name: 'CPU Load Maximum'
@@ -3933,283 +3936,283 @@ zabbix_export:
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.2
         - sortorder: '2'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.3
         - sortorder: '3'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.4
         - sortorder: '4'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.5
         - sortorder: '5'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.6
         - sortorder: '6'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.7
         - sortorder: '7'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.8
         - sortorder: '8'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.9
         - sortorder: '9'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.10
         - sortorder: '10'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.11
         - sortorder: '11'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.12
         - sortorder: '12'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.13
         - sortorder: '13'
           color: 7EC25C
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.14
         - sortorder: '14'
           color: 3165D5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.15
         - sortorder: '15'
           color: 79A277
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.16
         - sortorder: '16'
           color: AA73DE
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.17
         - sortorder: '17'
           color: FD5434
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.18
         - sortorder: '18'
           color: F21C3E
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.19
         - sortorder: '19'
           color: 87AC4D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.20
         - sortorder: '20'
           color: E89DF4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.21
         - sortorder: '21'
           color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.22
         - sortorder: '22'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.23
         - sortorder: '23'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.24
         - sortorder: '24'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.25
         - sortorder: '25'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.26
         - sortorder: '26'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.27
         - sortorder: '27'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.28
         - sortorder: '28'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.29
         - sortorder: '29'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.30
         - sortorder: '30'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.31
         - sortorder: '31'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.32
         - sortorder: '32'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.33
         - sortorder: '33'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.34
         - sortorder: '34'
           color: 7EC25C
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.35
         - sortorder: '35'
           color: 3165D5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.36
         - sortorder: '36'
           color: 79A277
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.37
         - sortorder: '37'
           color: AA73DE
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.38
         - sortorder: '38'
           color: FD5434
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.39
         - sortorder: '39'
           color: F21C3E
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.40
         - sortorder: '40'
           color: 87AC4D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.41
         - sortorder: '41'
           color: E89DF4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.42
         - sortorder: '42'
           color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.43
         - sortorder: '43'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.44
         - sortorder: '44'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.45
         - sortorder: '45'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.46
         - sortorder: '46'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.47
         - sortorder: '47'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.cpu-load-maximum.48
     - uuid: 66baba22818840808b10cae5825912fd
       name: 'Memory Utilization'
@@ -4217,19 +4220,19 @@ zabbix_export:
         - color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.resources.memory.free
         - sortorder: '1'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.resources.memory.used
         - sortorder: '2'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.resources.memory.total
     - uuid: 94bbe609cd5f474bbc13e8183636c2dd
       name: 'Palo Alto Sensor Temperature'
@@ -4238,67 +4241,67 @@ zabbix_export:
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.mp.core
         - sortorder: '3'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.CP.Core
         - sortorder: '4'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.cp
         - sortorder: '5'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.DP0.Core
         - sortorder: '6'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.DP0.CE
         - sortorder: '7'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.DP1.DP2
         - sortorder: '8'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.NP.Core
         - sortorder: '9'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.np
         - sortorder: '10'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.Switch.Core
         - sortorder: '11'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.Switch
         - sortorder: '12'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.thermal.Top.Front
     - uuid: 44694609641b4c9d87a52dedfceb593b
       name: 'Processor Management Plane'
@@ -4306,7 +4309,7 @@ zabbix_export:
         - color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.resources.management.cpu
     - uuid: a07aa9ddb9044729b99f4797c423602c
       name: 'System Resource Monitor'
@@ -4314,95 +4317,95 @@ zabbix_export:
         - color: 199C0D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.aho_result
         - sortorder: '1'
           color: F63100
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.dfa_result
         - sortorder: '2'
           color: 2774A4
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_ctrl
         - sortorder: '3'
           color: F7941D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_fastpath
         - sortorder: '4'
           color: FC6EA3
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_forwarding
         - sortorder: '5'
           color: 6C59DC
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_host
         - sortorder: '6'
           color: C7A72D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_lookup
         - sortorder: '7'
           color: BA2A5D
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_mgmt
         - sortorder: '8'
           color: F230E0
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_np
         - sortorder: '9'
           color: 5CCD18
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.flow_slowpath
         - sortorder: '10'
           color: BB2A02
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.fpga_result
         - sortorder: '11'
           color: AC41A5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.lwm
         - sortorder: '12'
           color: 89ABF8
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.module_internal
         - sortorder: '13'
           color: 7EC25C
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.nac_result
         - sortorder: '14'
           color: 3165D5
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.pktlog_forwarding
         - sortorder: '15'
           color: 79A277
           calc_fnc: ALL
           item:
-            host: 'Palo Alto by API'
+            host: 'Palo Alto PA5220 by API'
             key: paloalto.system.zip_result
