@@ -79,6 +79,8 @@ This template can monitor the following data:
 
 - CPU and memory usage
 - Interface status and statistics
+- HA Status
+- System Information
 - Security policy-related statistics
 - Session information
 - Tracked security events
