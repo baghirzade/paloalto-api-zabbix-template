@@ -1,0 +1,2175 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2821
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 zabbix_export:\
+  version: '7.0'\
+  template_groups:\
+    - uuid: 36bff6c29af64692839d077febfc7079\
+      name: 'Templates/Network devices'\
+  templates:\
+    - uuid: 7b3c176b5632484a98e513184e0f3e94\
+      template: 'Palo Alto Networks Firewalls by API'\
+      name: 'Palo Alto Networks Firewalls by API'\
+      groups:\
+        - name: 'Templates/Network devices'\
+      items:\
+        - uuid: 9bca1a6294fa4665a7a1189ec24e3868\
+          name: 'Certificates Data'\
+          type: HTTP_AGENT\
+          key: certificates.raw\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: config\
+            - name: xpath\
+              value: /config/shared/certificate\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: a1001e2933104483b91a7b2b85187792\
+          name: 'SSL Certificate Data'\
+          type: HTTP_AGENT\
+          key: paloalto.cert.data\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><sslmgr-store><config-certificate-info></config-certificate-info></sslmgr-store></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 5027e262ae68439a838cc1b7f09ea023\
+          name: 'API-\{$INTERFACE_NAME\} ibytes mbps'\
+          type: DEPENDENT\
+          key: paloalto.counter.interface.ibytes\
+          delay: '0'\
+          trends: '0'\
+          status: DISABLED\
+          value_type: FLOAT\
+          preprocessing:\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result.ifnet.ifnet.entry.ibytes\
+            - type: CHANGE_PER_SECOND\
+              parameters:\
+                - ''\
+            - type: MULTIPLIER\
+              parameters:\
+                - '8'\
+            - type: MULTIPLIER\
+              parameters:\
+                - '1.0E-6'\
+          master_item:\
+            key: paloalto.counter.interface.mbps\
+        - uuid: 11ffd7945462421d8e12532dae10d3cf\
+          name: 'API-\{$INTERFACE_NAME\} mbps'\
+          type: HTTP_AGENT\
+          key: paloalto.counter.interface.mbps\
+          trends: '0'\
+          status: DISABLED\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><counter><interface>\{$INTERFACE_NAME\}</interface></counter></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: a667e59dc6ef46e99adf72e6c71bb99d\
+          name: 'API-\{$INTERFACE_NAME\} obytes mbps'\
+          type: DEPENDENT\
+          key: paloalto.counter.interface.obytes\
+          delay: '0'\
+          trends: '0'\
+          status: DISABLED\
+          preprocessing:\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result.ifnet.ifnet.entry.obytes\
+            - type: CHANGE_PER_SECOND\
+              parameters:\
+                - ''\
+            - type: MULTIPLIER\
+              parameters:\
+                - '8'\
+            - type: MULTIPLIER\
+              parameters:\
+                - '1.0E-6'\
+          master_item:\
+            key: paloalto.counter.interface.mbps\
+        - uuid: 217ff7c8c76949dba69b78a7b613f6da\
+          name: 'API-Disk Utilization'\
+          type: HTTP_AGENT\
+          key: paloalto.disk.space\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><disk-space></disk-space></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 9a4ae96f8e194d62a49a8943f2a65afb\
+          name: 'API-Disk Space Free'\
+          type: DEPENDENT\
+          key: paloalto.disk.space.free\
+          delay: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var output = value.match(/\\/dev\\/(md|dm)\\d+\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)/);\
+                  if (output) \{\
+                      return parseFloat(output[4]); // Return the used space regardless of mdX or dmX\
+                  \}\
+                  return null;\
+          master_item:\
+            key: paloalto.disk.space\
+        - uuid: 5e4ee3cf137447718f8f4e6b8621d0e4\
+          name: 'API-Disk Space Use%'\
+          type: DEPENDENT\
+          key: paloalto.disk.space.percentage.used\
+          delay: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var output = value.match(/\\/dev\\/(md|dm)\\d+\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)/);\
+                  if (output) \{\
+                      return parseFloat(output[5]); // Return the used space regardless of mdX or dmX\
+                  \}\
+                  return null;\
+          master_item:\
+            key: paloalto.disk.space\
+          triggers:\
+            - uuid: ccc7c15ae25c44fa8f483229950e05b2\
+              expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.disk.space.percentage.used)>90'\
+              name: 'Disaster Disk Usage Alert'\
+              priority: DISASTER\
+            - uuid: 42c73c50174e4fffb8881cdea3f6c515\
+              expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.disk.space.percentage.used)>75'\
+              name: 'High Disk Usage Alert'\
+              priority: HIGH\
+        - uuid: 168291eb5fa64adaada07e0a57f92c6f\
+          name: 'API-Disk Space Total'\
+          type: DEPENDENT\
+          key: paloalto.disk.space.total\
+          delay: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var output = value.match(/\\/dev\\/(md|dm)\\d+\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)/);\
+                  if (output) \{\
+                      return parseFloat(output[2]); // Return the used space regardless of mdX or dmX\
+                  \}\
+                  return null;\
+          master_item:\
+            key: paloalto.disk.space\
+        - uuid: aff6cd55fa1a4999821b0bc33808ca98\
+          name: 'API-Disk Space Used'\
+          type: DEPENDENT\
+          key: paloalto.disk.space.used\
+          delay: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var output = value.match(/\\/dev\\/(md|dm)\\d+\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)/);\
+                  if (output) \{\
+                      return parseFloat(output[3]); // Return the used space regardless of mdX or dmX\
+                  \}\
+                  return null;\
+          master_item:\
+            key: paloalto.disk.space\
+        - uuid: 66c13ed0d6574f2f8aaea0b7c4191f55\
+          name: 'GlobalProtect Gateways Statistics'\
+          type: HTTP_AGENT\
+          key: paloalto.globalprotect.gateways\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><global-protect-gateway><statistics></statistics></global-protect-gateway></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: ce039b0d8ffd475b9567636912c4173e\
+          name: 'GlobalProtect Gateways Statistics Total'\
+          type: HTTP_AGENT\
+          key: paloalto.globalprotect.gateways.total\
+          trends: '0'\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result.TotalCurrentUsers\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><global-protect-gateway><statistics></statistics></global-protect-gateway></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 1757a1995dc847db933844209c4cafca\
+          name: 'HA State Data'\
+          type: HTTP_AGENT\
+          key: paloalto.ha.data\
+          trends: '0'\
+          value_type: TEXT\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><high-availability><state></state></high-availability></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 540bb430a91f48939ee655485efba68b\
+          name: 'System Enviromentals Power'\
+          type: HTTP_AGENT\
+          key: paloalto.power.rail\
+          trends: '0'\
+          value_type: TEXT\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><environmentals><power></power></environmentals></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 80ca7eb4d8df4c79beb3b5f99b84027a\
+          name: 'Session Info'\
+          type: HTTP_AGENT\
+          key: paloalto.session.info\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><session><info></info></session></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 768928d568b04fecbf950980c429936b\
+          name: 'System Info'\
+          type: HTTP_AGENT\
+          key: paloalto.system.info\
+          trends: '0'\
+          value_type: TEXT\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><info></info></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 88caea1373f1439389b27fca83d8582f\
+          name: 'Resource Monitor'\
+          type: HTTP_AGENT\
+          key: paloalto.system.resource-monitor\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><running><resource-monitor><second><last>1</last></second></resource-monitor></running></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: a1e13a8efb044506991e45a5aad62f9b\
+          name: 'API-System Resources'\
+          type: HTTP_AGENT\
+          key: paloalto.system.resources\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><resources></resources></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 874b60158dd04f2b95c28591ca7972e4\
+          name: 'API-management plane'\
+          type: DEPENDENT\
+          key: paloalto.system.resources.management.cpu\
+          delay: '0'\
+          trends: '0'\
+          value_type: FLOAT\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  // Extract the %Cpu(s) line from the CDATA\
+                  var cdata = value.match(/%Cpu\\(s\\):\\s+([\\d.]+)\\s+us,\\s+([\\d.]+)\\s+sy/);\
+                  \
+                  if (cdata) \{\
+                      return parseFloat(cdata[2]);  // Returns the user CPU percentage (us)\
+                  \}\
+                  \
+                  return null;\
+          master_item:\
+            key: paloalto.system.resources\
+          triggers:\
+            - uuid: fc1576d26cd84ac39ebbfb6a8da30f8a\
+              expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.management.cpu)>90'\
+              name: 'Disaster Management Plane CPU Alert'\
+              priority: DISASTER\
+            - uuid: d7012529dc3945a9b1afaa1f15309762\
+              expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.management.cpu)>70'\
+              name: 'High Management Plane CPU Alert'\
+              priority: HIGH\
+        - uuid: d5b7c42cfe9c4d30a89e7671af3cbcb8\
+          name: 'API-Memory Free'\
+          type: DEPENDENT\
+          key: paloalto.system.resources.memory.free\
+          delay: '0'\
+          trends: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var memory = value.match(/(KiB|MiB|GiB) Mem\\s*:\\s*([\\d.]+)\\s*total,\\s*([\\d.]+)\\s*free,\\s*([\\d.]+)\\s*used/);\
+                  \
+                  if (memory && memory.length > 4) \{\
+                      var usedMemory = parseFloat(memory[3]);\
+                      var unit = memory[1];\
+                  \
+                      // Convert to MiB if needed\
+                      if (unit === 'KiB') \{\
+                          usedMemory = usedMemory / 1024;  // Convert KiB to MiB\
+                      \} else if (unit === 'GiB') \{\
+                          usedMemory = usedMemory * 1024;  // Convert GiB to MiB\
+                      \}\
+                  \
+                      return usedMemory;  // Return the used memory in MiB\
+                  \}\
+                  \
+                  return null;  // Return null if the pattern does not match\
+          master_item:\
+            key: paloalto.system.resources\
+        - uuid: e78153692b9d4fbf9cada83a239b02a7\
+          name: 'API-Memory Total'\
+          type: DEPENDENT\
+          key: paloalto.system.resources.memory.total\
+          delay: '0'\
+          trends: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var memory = value.match(/(KiB|MiB|GiB) Mem\\s*:\\s*([\\d.]+)\\s*total,\\s*([\\d.]+)\\s*free,\\s*([\\d.]+)\\s*used/);\
+                  \
+                  if (memory && memory.length > 4) \{\
+                      var usedMemory = parseFloat(memory[2]);\
+                      var unit = memory[1];\
+                  \
+                      // Convert to MiB if needed\
+                      if (unit === 'KiB') \{\
+                          usedMemory = usedMemory / 1024;  // Convert KiB to MiB\
+                      \} else if (unit === 'GiB') \{\
+                          usedMemory = usedMemory * 1024;  // Convert GiB to MiB\
+                      \}\
+                  \
+                      return usedMemory;  // Return the used memory in MiB\
+                  \}\
+                  \
+                  return null;  // Return null if the pattern does not match\
+          master_item:\
+            key: paloalto.system.resources\
+        - uuid: e2c0a525613b49aa817e6e86a8e921c2\
+          name: 'API-Memory Usage'\
+          type: DEPENDENT\
+          key: paloalto.system.resources.memory.used\
+          delay: '0'\
+          trends: '0'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var memory = value.match(/(KiB|MiB|GiB) Mem\\s*:\\s*([\\d.]+)\\s*total,\\s*([\\d.]+)\\s*free,\\s*([\\d.]+)\\s*used/);\
+                  \
+                  if (memory && memory.length > 4) \{\
+                      var usedMemory = parseFloat(memory[4]);\
+                      var unit = memory[1];\
+                  \
+                      // Convert to MiB if needed\
+                      if (unit === 'KiB') \{\
+                          usedMemory = usedMemory / 1024;  // Convert KiB to MiB\
+                      \} else if (unit === 'GiB') \{\
+                          usedMemory = usedMemory * 1024;  // Convert GiB to MiB\
+                      \}\
+                  \
+                      return usedMemory;  // Return the used memory in MiB\
+                  \}\
+                  \
+                  return null;  // Return null if the pattern does not match\
+          master_item:\
+            key: paloalto.system.resources\
+        - uuid: 54854094892a41178df0ff3658bd684e\
+          name: 'System Enviromentals Fans'\
+          type: HTTP_AGENT\
+          key: paloalto.thermal.fans\
+          trends: '0'\
+          value_type: TEXT\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><environmentals><fans></fans></environmentals></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: cf8e352552b94777b9f5e027a3798b41\
+          name: 'API-Slot0 Sensor Temperature Broadwell MP Core'\
+          type: DEPENDENT\
+          key: paloalto.thermal.mp.core\
+          delay: '0'\
+          trends: '0'\
+          value_type: FLOAT\
+          preprocessing:\
+            - type: JSONPATH\
+              parameters:\
+                - $.response.result.thermal.Slot0.entry.DegreesC\
+          master_item:\
+            key: paloalto.thermal.status\
+        - uuid: c4aadb3b9a7947e3a79d913dfa621f68\
+          name: 'System Enviromentals Thermal'\
+          type: HTTP_AGENT\
+          key: paloalto.thermal.status\
+          trends: '0'\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><system><environmentals><thermal></thermal></environmentals></system></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 65d68ace4055403690a5a62cffb12164\
+          name: 'IPSec State'\
+          type: HTTP_AGENT\
+          key: paloalto.vpn.flow\
+          trends: '0'\
+          status: DISABLED\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><vpn><flow><all></all></flow></vpn></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+        - uuid: 1dd97e2ea7b44b9187fc631c84b2572c\
+          name: 'VPN Gateway Status'\
+          type: HTTP_AGENT\
+          key: vpn.ike.status\
+          trends: '0'\
+          status: DISABLED\
+          value_type: CHAR\
+          preprocessing:\
+            - type: XML_TO_JSON\
+              parameters:\
+                - ''\
+            - type: STR_REPLACE\
+              parameters:\
+                - '@'\
+                - ''\
+          url: 'https://\{$FIREWALL_IP\}/api/'\
+          query_fields:\
+            - name: type\
+              value: op\
+            - name: cmd\
+              value: '<show><vpn><ike-sa><detail></detail></ike-sa></vpn></show>'\
+            - name: key\
+              value: '\{$PALO_API_KEY\}'\
+      discovery_rules:\
+        - uuid: 58a6b2b19ad54e3498cfa2b2d1f06aea\
+          name: 'Certificate Discovery'\
+          type: DEPENDENT\
+          key: certificates.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 61f0df18ecd94160b8067de7bef1d1df\
+              name: 'Certificate Expiry \{#CERTNAME\}'\
+              type: DEPENDENT\
+              key: 'cert.expiry[\{#CERTNAME\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.certificate.entry[?(@.name=="\{#CERTNAME\}")]'\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var entry = JSON.parse(value)[0];\
+                      return JSON.stringify(\{\
+                          "expiry_epoch": entry["expiry-epoch"],\
+                          "not_valid_after": entry["not-valid-after"]\
+                      \});\
+              master_item:\
+                key: certificates.raw\
+              trigger_prototypes:\
+                - uuid: 6803aa8e4d204445ab4b72b519375cd4\
+                  expression: 'jsonpath(last(/Palo Alto Networks Firewalls by API/cert.expiry[\{#CERTNAME\}]),"$.expiry_epoch")<now()+30d'\
+                  name: 'Certificate \{#COMMONNAME\} is Expiring Soon'\
+                  priority: HIGH\
+          master_item:\
+            key: certificates.raw\
+          lld_macro_paths:\
+            - lld_macro: '\{#CERTNAME\}'\
+              path: '$.["CERTNAME"]'\
+            - lld_macro: '\{#COMMONNAME\}'\
+              path: '$.["COMMONNAME"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.certificate.entry.forEach(function(entry) \{\
+                      output.push(\{\
+                          "CERTNAME": entry.name,\
+                          "COMMONNAME": entry["common-name"]\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+        - uuid: 47d9b2aeff01441b95a8a8bff895795d\
+          name: 'CPU load average discovery'\
+          type: DEPENDENT\
+          key: cpu.load.average.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 443481b1ea444d08a5088007e39ce5f6\
+              name: 'CPU load average\{#COREID\}'\
+              type: DEPENDENT\
+              key: 'cpu.load.average.[\{#COREID\}]'\
+              delay: '0'\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result["resource-monitor"]["data-processors"][*]["second"]["cpu-load-average"]["entry"][?(@.coreid==\{#COREID\})].value'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.system.resource-monitor\
+              trigger_prototypes:\
+                - uuid: da2644d76e9741afb43aecb5a84406bd\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/cpu.load.average.[\{#COREID\}])>90'\
+                  name: 'Disaster CPU Usage Alert \{#COREID\}'\
+                  priority: DISASTER\
+                - uuid: e55e1b3d2d764849a8ebcdb48cc20178\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/cpu.load.average.[\{#COREID\}])>80'\
+                  name: 'High CPU Usage Alert \{#COREID\}'\
+                  priority: HIGH\
+          master_item:\
+            key: paloalto.system.resource-monitor\
+          lld_macro_paths:\
+            - lld_macro: '\{#COREID\}'\
+              path: '$.["coreid"]'\
+            - lld_macro: '\{#VALUE\}'\
+              path: '$.["value"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var data = JSON.parse(value).response.result["resource-monitor"]["data-processors"].s1dp0.second["cpu-load-average"].entry;\
+                  data.forEach(function(item) \{\
+                      item.value = parseFloat(item.value);\
+                      item.coreid = parseInt(item.coreid);\
+                  \});\
+                  return JSON.stringify(data);\
+        - uuid: 20abd482a0864ad0862a66af3796bca0\
+          name: 'CPU load maximum discovery'\
+          type: DEPENDENT\
+          key: cpu.load.maximum.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 44a4dced470b4d9ca1d113102d9edb18\
+              name: 'CPU load maximum\{#COREID\}'\
+              type: DEPENDENT\
+              key: 'cpu.load.maximum.[\{#COREID\}]'\
+              delay: '0'\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result["resource-monitor"]["data-processors"][*]["second"]["cpu-load-maximum"]["entry"][?(@.coreid==\{#COREID\})].value'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.system.resource-monitor\
+              trigger_prototypes:\
+                - uuid: 6023bc66046b48188501dfd0c64ead46\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/cpu.load.maximum.[\{#COREID\}])>90'\
+                  name: 'Disaster CPU Usage Alert \{#COREID\}'\
+                  priority: DISASTER\
+                - uuid: 6644310ca5c5450a90d0bf17ea51a92a\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/cpu.load.maximum.[\{#COREID\}])>80'\
+                  name: 'High CPU Usage Alert \{#COREID\}'\
+                  priority: HIGH\
+          master_item:\
+            key: paloalto.system.resource-monitor\
+          lld_macro_paths:\
+            - lld_macro: '\{#COREID\}'\
+              path: '$.["coreid"]'\
+            - lld_macro: '\{#VALUE\}'\
+              path: '$.["value"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var data = JSON.parse(value).response.result["resource-monitor"]["data-processors"].s1dp0.second["cpu-load-maximum"].entry;\
+                  data.forEach(function(item) \{\
+                      item.value = parseFloat(item.value);\
+                      item.coreid = parseInt(item.coreid);\
+                  \});\
+                  return JSON.stringify(data);\
+        - uuid: c70ff2d7a2e8407e995bba6c0b4dc18a\
+          name: 'Data Processors task discovery'\
+          type: DEPENDENT\
+          key: data.processors.task.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 5dcb2ccf52114217bde7af0702c1d4d7\
+              name: 'Data Processors task \{#TASKNAME\}'\
+              type: DEPENDENT\
+              key: 'data.processors.task.[\{#TASKNAME\}]'\
+              delay: '0'\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result["resource-monitor"]["data-processors"][*]["second"]["task"]["\{#TASKNAME\}"]'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.system.resource-monitor\
+              trigger_prototypes:\
+                - uuid: e182046219d84b36bb8d23012231681f\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/data.processors.task.[\{#TASKNAME\}])>90'\
+                  name: 'Disaster CPU Usage Alert \{#TASKNAME\}'\
+                  priority: DISASTER\
+                - uuid: 818534560d8a4c43bbb1c5b0e12b82f4\
+                  expression: 'last(/Palo Alto Networks Firewalls by API/data.processors.task.[\{#TASKNAME\}])>80'\
+                  name: 'High CPU Usage Alert \{#TASKNAME\}'\
+                  priority: HIGH\
+          master_item:\
+            key: paloalto.system.resource-monitor\
+          lld_macro_paths:\
+            - lld_macro: '\{#TASKNAME\}'\
+              path: '$.["TASKNAME"]'\
+            - lld_macro: '\{#TASKVALUE\}'\
+              path: '$.["TASKVALUE"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var tasks = JSON.parse(value).response.result["resource-monitor"]["data-processors"].s1dp0.second.task;\
+                  var result = [];\
+                  for (var key in tasks) \{\
+                      result.push(\{ TASKNAME: key, TASKVALUE: tasks[key] \});\
+                  \}\
+                  return JSON.stringify(result);\
+        - uuid: 930e34dc716a452a911fd53d87b3660d\
+          name: 'Fan sensors Discovery'\
+          type: DEPENDENT\
+          key: fan.sensors.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 1cbc6ba22ebf4bec8a4fcc595676d681\
+              name: 'Fan: \{#DESCRIPTION\}'\
+              type: DEPENDENT\
+              key: 'fan.sensor.[\{#DESCRIPTION\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.fan.Slot1.entry[?(@.description=="\{#DESCRIPTION\}")].alarm'\
+                - type: REGEX\
+                  parameters:\
+                    - (True|False)\
+                    - \\1\
+              master_item:\
+                key: paloalto.thermal.fans\
+          master_item:\
+            key: paloalto.thermal.fans\
+          lld_macro_paths:\
+            - lld_macro: '\{#DESCRIPTION\}'\
+              path: $.DESCRIPTION\
+            - lld_macro: '\{#RPMS\}'\
+              path: $.RPMS\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.fan.Slot1.entry.forEach(function(entry) \{\
+                      output.push(\{\
+                          "DESCRIPTION": entry.description,\
+                          "RPMS": entry.RPMs\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+        - uuid: 9147bf56678e4be7b4166f8ac7a5ef14\
+          name: 'GlobalProtect Gateway Discovery'\
+          type: DEPENDENT\
+          key: gp.gateway.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: d7e5a8ceb7a042a888632958a4ba88e4\
+              name: 'GlobalProtect Gateway \{#GP_GWNAME\} Statistics'\
+              type: DEPENDENT\
+              key: 'gp.gateway.stats[\{#GP_GWNAME\}]'\
+              delay: '0'\
+              trends: '0'\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.Gateway[?(@.name=="\{#GP_GWNAME\}")].CurrentUsers'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.globalprotect.gateways\
+          master_item:\
+            key: paloalto.globalprotect.gateways\
+          lld_macro_paths:\
+            - lld_macro: '\{#GP_GWNAME\}'\
+              path: '$.["GWNAME"]'\
+            - lld_macro: '\{#GP_GWUSERS\}'\
+              path: '$.["GWUSERS"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.Gateway.forEach(function(gateway) \{\
+                      output.push(\{\
+                          "GWNAME": gateway.name,\
+                          "GWUSERS": gateway.CurrentUsers\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+        - uuid: 643e545aef0b4ef086fa66bf9c72f1be\
+          name: 'HA Discovery'\
+          type: DEPENDENT\
+          key: ha.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 9ea3f4d0ac9e46ebafe963d0619a1931\
+              name: 'HA \{#HA_FIELD\}'\
+              type: DEPENDENT\
+              key: 'ha.status[\{#HA_FIELD\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var data = JSON.parse(value);\
+                      var result = [];\
+                      \
+                      var localInfo = data.response.result.group["local-info"];\
+                      var peerInfo = data.response.result.group["peer-info"];\
+                      \
+                      if (localInfo && peerInfo) \{\
+                          var fields = [\
+                              \{ name: "mgmt_ip_local", value: localInfo["mgmt-ip"] || "N/A" \},\
+                              \{ name: "local_state", value: localInfo["state"] || "N/A" \},\
+                              \{ name: "peer_state", value: peerInfo["state"] || "N/A" \},\
+                              \{ name: "peer_status", value: peerInfo["conn-status"] || "N/A" \},\
+                              \{ name: "ha1_status", value: peerInfo["conn-ha1"] ? peerInfo["conn-ha1"]["conn-status"] : "N/A" \},\
+                              \{ name: "ha1b_status", value: peerInfo["conn-ha1-backup"] ? peerInfo["conn-ha1-backup"]["conn-status"] : "N/A" \},\
+                              \{ name: "ha2_status", value: peerInfo["conn-ha2"] ? peerInfo["conn-ha2"]["conn-status"] : "N/A" \},\
+                              \{ name: "local_ha_mode", value: localInfo["mode"] || "N/A" \},\
+                          ];\
+                      \
+                          fields.forEach(function (entry) \{\
+                              result.push(\{\
+                                  "HA_FIELD": entry.name,  // Unique key for Zabbix\
+                                  "HA_VALUE": entry.value  // Corresponding value\
+                              \});\
+                          \});\
+                      \}\
+                      \
+                      return JSON.stringify(result);\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$[?(@["HA_FIELD"]=="\{#HA_FIELD\}")].HA_VALUE'\
+                - type: REGEX\
+                  parameters:\
+                    - '"([^"]+)"'\
+                    - \\1\
+              master_item:\
+                key: paloalto.ha.data\
+              tags:\
+                - tag: ha\
+                  value: mode\
+          master_item:\
+            key: paloalto.ha.data\
+          lld_macro_paths:\
+            - lld_macro: '\{#HA_FIELD\}'\
+              path: '$.["HA_FIELD"]'\
+            - lld_macro: '\{#HA_VALUE\}'\
+              path: '$.["HA_VALUE"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var data = JSON.parse(value);\
+                  var result = [];\
+                  \
+                  var localInfo = data.response.result.group["local-info"];\
+                  var peerInfo = data.response.result.group["peer-info"];\
+                  \
+                  if (localInfo && peerInfo) \{\
+                      var fields = [\
+                          \{ name: "mgmt_ip_local", value: localInfo["mgmt-ip"] || "N/A" \},\
+                          \{ name: "local_state", value: localInfo["state"] || "N/A" \},\
+                          \{ name: "peer_state", value: peerInfo["state"] || "N/A" \},\
+                          \{ name: "peer_status", value: peerInfo["conn-status"] || "N/A" \},\
+                          \{ name: "ha1_status", value: peerInfo["conn-ha1"] ? peerInfo["conn-ha1"]["conn-status"] : "N/A" \},\
+                          \{ name: "ha1b_status", value: peerInfo["conn-ha1-backup"] ? peerInfo["conn-ha1-backup"]["conn-status"] : "N/A" \},\
+                          \{ name: "ha2_status", value: peerInfo["conn-ha2"] ? peerInfo["conn-ha2"]["conn-status"] : "N/A" \},\
+                          \{ name: "local_ha_mode", value: localInfo["mode"] || "N/A" \},\
+                      ];\
+                  \
+                      fields.forEach(function (entry) \{\
+                          result.push(\{\
+                              "HA_FIELD": entry.name,  // Unique key for Zabbix\
+                              "HA_VALUE": entry.value  // Corresponding value\
+                          \});\
+                      \});\
+                  \}\
+                  \
+                  return JSON.stringify(result);\
+        - uuid: 5154eddd75754f07bff0b793fdf2a3c2\
+          name: 'Power Rail Discovery'\
+          type: DEPENDENT\
+          key: power.rail.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 83f45c8efc9d4f90bf6f7513d0e48ef2\
+              name: 'System Enviromentals \{#DESCRIPTION\}'\
+              type: DEPENDENT\
+              key: 'power.rail[\{#DESCRIPTION\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var input = JSON.parse(value);\
+                      var output = [];\
+                      input.response.result.power.Slot1.entry.forEach(function(entry) \{\
+                          output.push(\{\
+                              "DESCRIPTION": entry.description,\
+                              "ALARM": entry.alarm\
+                          \});\
+                      \});\
+                      return JSON.stringify(output);\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$[?(@["DESCRIPTION"]=="\{#DESCRIPTION\}")].ALARM'\
+                - type: REGEX\
+                  parameters:\
+                    - (True|False)\
+                    - \\1\
+              master_item:\
+                key: paloalto.power.rail\
+          master_item:\
+            key: paloalto.power.rail\
+          lld_macro_paths:\
+            - lld_macro: '\{#ALARM\}'\
+              path: $.ALARM\
+            - lld_macro: '\{#DESCRIPTION\}'\
+              path: $.DESCRIPTION\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.power.Slot1.entry.forEach(function(entry) \{\
+                      output.push(\{\
+                          "DESCRIPTION": entry.description,\
+                          "ALARM": entry.alarm\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+        - uuid: 0a817bf06794488f8a1c1cf4b5c12960\
+          name: 'Session info Discovery'\
+          type: DEPENDENT\
+          key: session.info.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 63d7af1cbc534236ad3714251ab39e88\
+              name: 'Session \{#SESSION_KEY\}'\
+              type: DEPENDENT\
+              key: 'session.info[\{#SESSION_KEY\}]'\
+              delay: '0'\
+              preprocessing:\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var input = JSON.parse(value);\
+                      var output = [];\
+                      \
+                      if (input.response && input.response.result) \{\
+                          var session_data = [\
+                              \{ "KEY": "ConnectionsPerSecond", "VALUE": input.response.result.cps || "N/A" \},\
+                              \{ "KEY": "CurrentSessionThroughput", "VALUE": input.response.result.kbps || "N/A" \},\
+                              \{ "KEY": "NumberActiveSessions", "VALUE": input.response.result["num-active"] || "N/A" \},\
+                              \{ "KEY": "NumberMaxSessions", "VALUE": input.response.result["num-max"] || "N/A" \},\
+                              \{ "KEY": "NumberTCPSessions", "VALUE": input.response.result["num-tcp"] || "N/A" \},\
+                              \{ "KEY": "NumberUDPSessions", "VALUE": input.response.result["num-udp"] || "N/A" \},\
+                              \{ "KEY": "PacketsPerSecond", "VALUE": input.response.result.pps || "N/A" \}\
+                          ];\
+                      \
+                          session_data.forEach(function(entry) \{\
+                              output.push(\{\
+                                  "SESSION_KEY": entry.KEY,   // Unique session key\
+                                  "SESSION_VALUE": entry.VALUE  // Corresponding value\
+                              \});\
+                          \});\
+                      \}\
+                      \
+                      return JSON.stringify(output);\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$[?(@["SESSION_KEY"]=="\{#SESSION_KEY\}")].SESSION_VALUE'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.session.info\
+              tags:\
+                - tag: session\
+                  value: info\
+          master_item:\
+            key: paloalto.session.info\
+          lld_macro_paths:\
+            - lld_macro: '\{#SESSION_KEY\}'\
+              path: '$.["SESSION_KEY"]'\
+            - lld_macro: '\{#SESSION_VALUE\}'\
+              path: '$.["SESSION_VALUE"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  \
+                  if (input.response && input.response.result) \{\
+                      var session_data = [\
+                          \{ "KEY": "ConnectionsPerSecond", "VALUE": input.response.result.cps || "N/A" \},\
+                          \{ "KEY": "CurrentSessionThroughput", "VALUE": input.response.result.kbps || "N/A" \},\
+                          \{ "KEY": "NumberActiveSessions", "VALUE": input.response.result["num-active"] || "N/A" \},\
+                          \{ "KEY": "NumberMaxSessions", "VALUE": input.response.result["num-max"] || "N/A" \},\
+                          \{ "KEY": "NumberTCPSessions", "VALUE": input.response.result["num-tcp"] || "N/A" \},\
+                          \{ "KEY": "NumberUDPSessions", "VALUE": input.response.result["num-udp"] || "N/A" \},\
+                          \{ "KEY": "PacketsPerSecond", "VALUE": input.response.result.pps || "N/A" \}\
+                      ];\
+                  \
+                      session_data.forEach(function(entry) \{\
+                          output.push(\{\
+                              "SESSION_KEY": entry.KEY,   // Unique session key\
+                              "SESSION_VALUE": entry.VALUE  // Corresponding value\
+                          \});\
+                      \});\
+                  \}\
+                  \
+                  return JSON.stringify(output);\
+        - uuid: 3fcdc2c8c9254fdb93564466c66726d4\
+          name: 'System info Discovery'\
+          type: DEPENDENT\
+          key: system.info.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 4b438f9fc71a4fbb9ecc4a327826fafb\
+              name: 'System \{#SYSTEM_KEY\}'\
+              type: DEPENDENT\
+              key: 'system.info[\{#SYSTEM_KEY\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var input = JSON.parse(value);\
+                      var output = [];\
+                      \
+                      if (input.response && input.response.result && input.response.result.system) \{\
+                          var systemInfo = input.response.result.system;\
+                      \
+                          var fields = [\
+                              \{ "KEY": "Hostname", "VALUE": systemInfo["hostname"] || "N/A" \},\
+                              \{ "KEY": "IPaddress", "VALUE": systemInfo["ip-address"] || "N/A" \},\
+                              \{ "KEY": "Model", "VALUE": systemInfo["model"] || "N/A" \},\
+                              \{ "KEY": "Software Version", "VALUE": systemInfo["sw-version"] || "N/A" \},\
+                              \{ "KEY": "Uptime", "VALUE": systemInfo["uptime"] || "N/A" \}\
+                          ];\
+                      \
+                          fields.forEach(function(entry) \{\
+                              output.push(\{\
+                                  "SYSTEM_KEY": entry.KEY,   // Unique key for each attribute\
+                                  "SYSTEM_VALUE": entry.VALUE  // Corresponding value\
+                              \});\
+                          \});\
+                      \}\
+                      \
+                      return JSON.stringify(output);\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$[?(@["SYSTEM_KEY"]=="\{#SYSTEM_KEY\}")].SYSTEM_VALUE'\
+                - type: REGEX\
+                  parameters:\
+                    - '"([^"]+)"'\
+                    - \\1\
+              master_item:\
+                key: paloalto.system.info\
+              tags:\
+                - tag: system\
+                  value: info\
+          master_item:\
+            key: paloalto.system.info\
+          lld_macro_paths:\
+            - lld_macro: '\{#SYSTEM_KEY\}'\
+              path: '$.["SYSTEM_KEY"]'\
+            - lld_macro: '\{#SYSTEM_VALUE\}'\
+              path: '$.["SYSTEM_VALUE"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  \
+                  if (input.response && input.response.result && input.response.result.system) \{\
+                      var systemInfo = input.response.result.system;\
+                  \
+                      var fields = [\
+                          \{ "KEY": "Hostname", "VALUE": systemInfo["hostname"] || "N/A" \},\
+                          \{ "KEY": "IPaddress", "VALUE": systemInfo["ip-address"] || "N/A" \},\
+                          \{ "KEY": "Model", "VALUE": systemInfo["model"] || "N/A" \},\
+                          \{ "KEY": "Software Version", "VALUE": systemInfo["sw-version"] || "N/A" \},\
+                          \{ "KEY": "Uptime", "VALUE": systemInfo["uptime"] || "N/A" \}\
+                      ];\
+                  \
+                      fields.forEach(function(entry) \{\
+                          output.push(\{\
+                              "SYSTEM_KEY": entry.KEY,   // Unique key for each attribute\
+                              "SYSTEM_VALUE": entry.VALUE  // Corresponding value\
+                          \});\
+                      \});\
+                  \}\
+                  \
+                  return JSON.stringify(output);\
+        - uuid: 29d2bf571a0340ca9a26e15ea969c8c9\
+          name: 'Thermal Sensor Discovery'\
+          type: DEPENDENT\
+          key: thermal.sensors.discovery\
+          delay: '0'\
+          item_prototypes:\
+            - uuid: 43546985477a4e31a739419e1c6bd1e6\
+              name: 'Temperature: \{#DESCRIPTION\}'\
+              type: DEPENDENT\
+              key: 'thermal.sensor.temp[\{#DESCRIPTION\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.thermal.Slot1.entry[?(@.description=="\{#DESCRIPTION\}")].DegreesC'\
+                - type: REGEX\
+                  parameters:\
+                    - (\\d+)\
+                    - \\1\
+              master_item:\
+                key: paloalto.thermal.status\
+          master_item:\
+            key: paloalto.thermal.status\
+          lld_macro_paths:\
+            - lld_macro: '\{#DEGREESC\}'\
+              path: $.DEGREESC\
+            - lld_macro: '\{#DESCRIPTION\}'\
+              path: $.DESCRIPTION\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.thermal.Slot1.entry.forEach(function(entry) \{\
+                      output.push(\{\
+                          "DESCRIPTION": entry.description,\
+                          "DEGREESC": entry.DegreesC\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+        - uuid: 174234d962a04daea6cd65674328e60a\
+          name: 'VPN IKE-SA Discovery'\
+          type: DEPENDENT\
+          key: vpn.ike.discovery\
+          delay: '0'\
+          status: DISABLED\
+          item_prototypes:\
+            - uuid: 153517afa4fc4f2bb6167eda5dade111\
+              name: 'IKE-sa Role for \{#VPNNAME\}'\
+              type: DEPENDENT\
+              key: 'vpn.role.[\{#VPNNAME\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.entry[?(@.name=="\{#VPNNAME\}")].role'\
+                - type: REGEX\
+                  parameters:\
+                    - '"([^"]+)"'\
+                    - \\1\
+              master_item:\
+                key: vpn.ike.status\
+          master_item:\
+            key: vpn.ike.status\
+          lld_macro_paths:\
+            - lld_macro: '\{#ROLE\}'\
+              path: '$.["ROLE"]'\
+            - lld_macro: '\{#VPNNAME\}'\
+              path: '$.["VPNNAME"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  input.response.result.entry.forEach(function(entry) \{\
+                      output.push(\{\
+                          "VPNNAME": entry.name,\
+                          "ROLE": entry.role\
+                      \});\
+                  \});\
+                  return JSON.stringify(output);\
+                  \
+        - uuid: 453f16e9bed443378fd19a6d32508cdf\
+          name: 'VPN IPSec Discovery'\
+          type: DEPENDENT\
+          key: vpn.ipsec.discovery\
+          delay: '0'\
+          status: DISABLED\
+          item_prototypes:\
+            - uuid: ccc8e7288baa49a181dbaa10e4b21f9f\
+              name: 'IPsec \{#VPNNAME\} Status'\
+              type: DEPENDENT\
+              key: 'vpn.status[\{#VPNNAME\}]'\
+              delay: '0'\
+              trends: '0'\
+              value_type: CHAR\
+              preprocessing:\
+                - type: JSONPATH\
+                  parameters:\
+                    - '$.response.result.IPSec.entry[?(@.name=="\{#VPNNAME\}")].state'\
+                - type: JAVASCRIPT\
+                  parameters:\
+                    - |\
+                      var input = JSON.parse(value);\
+                      if (Array.isArray(input)) \{\
+                          return input[0];\
+                      \}\
+                      return input;\
+              master_item:\
+                key: paloalto.vpn.flow\
+          master_item:\
+            key: paloalto.vpn.flow\
+          lld_macro_paths:\
+            - lld_macro: '\{#STATE\}'\
+              path: '$.["STATE"]'\
+            - lld_macro: '\{#VPNNAME\}'\
+              path: '$.["VPNNAME"]'\
+          preprocessing:\
+            - type: JAVASCRIPT\
+              parameters:\
+                - |\
+                  var input = JSON.parse(value);\
+                  var output = [];\
+                  \
+                  if (input.response && input.response.result && input.response.result.IPSec && input.response.result.IPSec.entry) \{\
+                      var entries = input.response.result.IPSec.entry;\
+                  \
+                      // Normalize single object to array if necessary\
+                      if (!Array.isArray(entries)) \{\
+                          entries = [entries];\
+                      \}\
+                  \
+                      entries.forEach(function(entry) \{\
+                          output.push(\{\
+                              "VPNNAME": entry.name,\
+                              "STATE": entry.state,\
+                              "PEERIP": entry.peerip,\
+                              "LOCALIP": entry.localip,\
+                              "TUNNEL": entry["inner-if"]\
+                          \});\
+                      \});\
+                  \}\
+                  \
+                  return JSON.stringify(output);\
+      dashboards:\
+        - uuid: 4c5240b3b7cd4e329fcecfd1069a7fa0\
+          name: 'Global view'\
+          pages:\
+            - widgets:\
+                - type: item\
+                  name: Uptime\
+                  width: '36'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'Software Version'\
+                  'y': '3'\
+                  width: '14'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'HA State'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: svggraph\
+                  name: 'Processor Data Plane'\
+                  'y': '9'\
+                  width: '36'\
+                  height: '5'\
+                  fields:\
+                    - type: STRING\
+                      name: ds.0.color\
+                      value: FF465C\
+                    - type: STRING\
+                      name: ds.0.data_set_label\
+                      value: dfa_result\
+                    - type: INTEGER\
+                      name: ds.0.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.0.items.0\
+                      value: API-processors-s1dp0-dfa_result\
+                    - type: INTEGER\
+                      name: ds.0.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.1.color\
+                      value: FFD54F\
+                    - type: INTEGER\
+                      name: ds.1.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.1.items.0\
+                      value: API-processors-s1dp0-flow_ctrl\
+                    - type: INTEGER\
+                      name: ds.1.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.2.color\
+                      value: 0EC9AC\
+                    - type: INTEGER\
+                      name: ds.2.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.2.items.0\
+                      value: API-processors-s1dp0-flow_fastpath\
+                    - type: INTEGER\
+                      name: ds.2.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.3.color\
+                      value: 524BBC\
+                    - type: INTEGER\
+                      name: ds.3.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.3.items.0\
+                      value: API-processors-s1dp0-flow_forwarding\
+                    - type: INTEGER\
+                      name: ds.3.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.4.color\
+                      value: ED1248\
+                    - type: INTEGER\
+                      name: ds.4.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.4.items.0\
+                      value: API-processors-s1dp0-flow_host\
+                    - type: INTEGER\
+                      name: ds.4.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.5.color\
+                      value: D1E754\
+                    - type: INTEGER\
+                      name: ds.5.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.5.items.0\
+                      value: API-processors-s1dp0-flow_lookup\
+                    - type: INTEGER\
+                      name: ds.5.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.6.color\
+                      value: 2AB5FF\
+                    - type: INTEGER\
+                      name: ds.6.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.6.items.0\
+                      value: API-processors-s1dp0-flow_mgmt\
+                    - type: INTEGER\
+                      name: ds.6.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.7.color\
+                      value: 385CC7\
+                    - type: INTEGER\
+                      name: ds.7.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.7.items.0\
+                      value: API-processors-s1dp0-flow_np\
+                    - type: INTEGER\
+                      name: ds.7.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.8.color\
+                      value: EC1594\
+                    - type: INTEGER\
+                      name: ds.8.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.8.items.0\
+                      value: API-processors-s1dp0-flow_slowpath\
+                    - type: INTEGER\
+                      name: ds.8.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.9.color\
+                      value: BAE37D\
+                    - type: INTEGER\
+                      name: ds.9.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.9.items.0\
+                      value: API-processors-s1dp0-flow_slowpath\
+                    - type: INTEGER\
+                      name: ds.9.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.10.color\
+                      value: 6AC8FF\
+                    - type: INTEGER\
+                      name: ds.10.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.10.items.0\
+                      value: API-processors-s1dp0-fpga_result\
+                    - type: INTEGER\
+                      name: ds.10.transparency\
+                      value: '7'\
+                    - type: STRING\
+                      name: ds.11.color\
+                      value: EE2B29\
+                    - type: INTEGER\
+                      name: ds.11.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.11.items.0\
+                      value: API-processors-s1dp0-lwm\
+                    - type: INTEGER\
+                      name: ds.11.transparency\
+                      value: '7'\
+                    - type: STRING\
+                      name: ds.12.color\
+                      value: 3CA20D\
+                    - type: INTEGER\
+                      name: ds.12.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.12.items.0\
+                      value: API-processors-s1dp0-module_internal\
+                    - type: INTEGER\
+                      name: ds.12.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.13.color\
+                      value: 6F4BBC\
+                    - type: INTEGER\
+                      name: ds.13.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.13.items.0\
+                      value: API-processors-s1dp0-nac_result\
+                    - type: INTEGER\
+                      name: ds.13.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.14.color\
+                      value: 00A1FF\
+                    - type: INTEGER\
+                      name: ds.14.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.14.items.0\
+                      value: API-processors-s1dp0-pktlog_forwarding\
+                    - type: INTEGER\
+                      name: ds.14.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.15.color\
+                      value: F3601B\
+                    - type: INTEGER\
+                      name: ds.15.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.15.items.0\
+                      value: API-processors-s1dp0-zip_result\
+                    - type: INTEGER\
+                      name: ds.15.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: lefty_static_units\
+                      value: '%'\
+                    - type: INTEGER\
+                      name: lefty_units\
+                      value: '1'\
+                    - type: STRING\
+                      name: reference\
+                      value: PFKIQ\
+                    - type: INTEGER\
+                      name: righty\
+                      value: '0'\
+                - type: graph\
+                  'y': '14'\
+                  width: '36'\
+                  height: '5'\
+                  fields:\
+                    - type: GRAPH\
+                      name: graphid.0\
+                      value:\
+                        host: 'Palo Alto Networks Firewalls by API'\
+                        name: 'Processor Management Plane'\
+                    - type: STRING\
+                      name: reference\
+                      value: CYXQO\
+                - type: svggraph\
+                  name: 'Disk Usage'\
+                  'y': '19'\
+                  width: '36'\
+                  height: '5'\
+                  fields:\
+                    - type: STRING\
+                      name: ds.0.color\
+                      value: FF465C\
+                    - type: STRING\
+                      name: ds.0.items.0\
+                      value: 'API-Disk Space Total'\
+                    - type: STRING\
+                      name: ds.1.color\
+                      value: FFD54F\
+                    - type: STRING\
+                      name: ds.1.items.0\
+                      value: 'API-Disk Space Used'\
+                    - type: STRING\
+                      name: ds.2.color\
+                      value: 0EC9AC\
+                    - type: STRING\
+                      name: ds.2.items.0\
+                      value: 'API-Disk Space Free'\
+                    - type: STRING\
+                      name: lefty_static_units\
+                      value: Gb\
+                    - type: INTEGER\
+                      name: lefty_units\
+                      value: '1'\
+                    - type: STRING\
+                      name: reference\
+                      value: KWUJH\
+                    - type: INTEGER\
+                      name: righty\
+                      value: '0'\
+                - type: item\
+                  name: 'HA Peer State'\
+                  x: '12'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'IP Address'\
+                  x: '14'\
+                  'y': '3'\
+                  width: '22'\
+                  height: '3'\
+                  fields:\
+                    - type: STRING\
+                      name: desc_color\
+                      value: FFBF00\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                    - type: STRING\
+                      name: value_color\
+                      value: 80FF00\
+                - type: item\
+                  name: 'HA Peer Status'\
+                  x: '24'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: Hostname\
+                  x: '36'\
+                  width: '36'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'HA Mode'\
+                  x: '36'\
+                  'y': '3'\
+                  width: '22'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'HA 1 Status'\
+                  x: '36'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: svggraph\
+                  name: 'CPU Load Avarage'\
+                  x: '36'\
+                  'y': '9'\
+                  width: '36'\
+                  height: '5'\
+                  fields:\
+                    - type: STRING\
+                      name: ds.0.color\
+                      value: FF465C\
+                    - type: INTEGER\
+                      name: ds.0.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.0.items.0\
+                      value: API-cpu-load-average1\
+                    - type: STRING\
+                      name: ds.0.items.1\
+                      value: API-cpu-load-average2\
+                    - type: STRING\
+                      name: ds.0.items.2\
+                      value: API-cpu-load-average3\
+                    - type: STRING\
+                      name: ds.0.items.3\
+                      value: API-cpu-load-average4\
+                    - type: STRING\
+                      name: ds.0.items.4\
+                      value: API-cpu-load-average5\
+                    - type: STRING\
+                      name: ds.0.items.5\
+                      value: API-cpu-load-average6\
+                    - type: STRING\
+                      name: ds.0.items.6\
+                      value: API-cpu-load-average7\
+                    - type: STRING\
+                      name: ds.0.items.7\
+                      value: API-cpu-load-average8\
+                    - type: STRING\
+                      name: ds.0.items.8\
+                      value: API-cpu-load-average9\
+                    - type: STRING\
+                      name: ds.0.items.9\
+                      value: API-cpu-load-average10\
+                    - type: STRING\
+                      name: ds.0.items.10\
+                      value: API-cpu-load-average11\
+                    - type: STRING\
+                      name: ds.0.items.11\
+                      value: API-cpu-load-average12\
+                    - type: STRING\
+                      name: ds.0.items.12\
+                      value: API-cpu-load-average13\
+                    - type: STRING\
+                      name: ds.0.items.13\
+                      value: API-cpu-load-average14\
+                    - type: STRING\
+                      name: ds.0.items.14\
+                      value: API-cpu-load-average15\
+                    - type: STRING\
+                      name: ds.0.items.15\
+                      value: API-cpu-load-average16\
+                    - type: STRING\
+                      name: ds.0.items.16\
+                      value: API-cpu-load-average17\
+                    - type: STRING\
+                      name: ds.0.items.17\
+                      value: API-cpu-load-average18\
+                    - type: STRING\
+                      name: ds.0.items.18\
+                      value: API-cpu-load-average19\
+                    - type: STRING\
+                      name: ds.0.items.19\
+                      value: API-cpu-load-average20\
+                    - type: STRING\
+                      name: ds.0.items.20\
+                      value: API-cpu-load-average21\
+                    - type: STRING\
+                      name: ds.0.items.21\
+                      value: API-cpu-load-average22\
+                    - type: STRING\
+                      name: ds.0.items.22\
+                      value: API-cpu-load-average23\
+                    - type: STRING\
+                      name: ds.0.items.23\
+                      value: API-cpu-load-average24\
+                    - type: STRING\
+                      name: ds.0.items.24\
+                      value: API-cpu-load-average25\
+                    - type: STRING\
+                      name: ds.0.items.25\
+                      value: API-cpu-load-average26\
+                    - type: STRING\
+                      name: ds.0.items.26\
+                      value: API-cpu-load-average27\
+                    - type: STRING\
+                      name: ds.0.items.27\
+                      value: API-cpu-load-average28\
+                    - type: STRING\
+                      name: ds.0.items.28\
+                      value: API-cpu-load-average29\
+                    - type: STRING\
+                      name: ds.0.items.29\
+                      value: API-cpu-load-average30\
+                    - type: STRING\
+                      name: ds.0.items.30\
+                      value: API-cpu-load-average31\
+                    - type: STRING\
+                      name: ds.0.items.31\
+                      value: API-cpu-load-average32\
+                    - type: STRING\
+                      name: ds.0.items.32\
+                      value: API-cpu-load-average33\
+                    - type: STRING\
+                      name: ds.0.items.33\
+                      value: API-cpu-load-average34\
+                    - type: STRING\
+                      name: ds.0.items.34\
+                      value: API-cpu-load-average35\
+                    - type: STRING\
+                      name: ds.0.items.35\
+                      value: API-cpu-load-average36\
+                    - type: STRING\
+                      name: ds.0.items.36\
+                      value: API-cpu-load-average37\
+                    - type: STRING\
+                      name: ds.0.items.37\
+                      value: API-cpu-load-average38\
+                    - type: STRING\
+                      name: ds.0.items.38\
+                      value: API-cpu-load-average39\
+                    - type: STRING\
+                      name: ds.0.items.39\
+                      value: API-cpu-load-average40\
+                    - type: STRING\
+                      name: ds.0.items.40\
+                      value: API-cpu-load-average41\
+                    - type: STRING\
+                      name: ds.0.items.41\
+                      value: API-cpu-load-average42\
+                    - type: STRING\
+                      name: ds.0.items.42\
+                      value: API-cpu-load-average43\
+                    - type: STRING\
+                      name: ds.0.items.43\
+                      value: API-cpu-load-average44\
+                    - type: STRING\
+                      name: ds.0.items.44\
+                      value: API-cpu-load-average45\
+                    - type: STRING\
+                      name: ds.0.items.45\
+                      value: API-cpu-load-average46\
+                    - type: STRING\
+                      name: ds.0.items.46\
+                      value: API-cpu-load-average47\
+                    - type: STRING\
+                      name: ds.0.items.47\
+                      value: API-cpu-load-average48\
+                    - type: INTEGER\
+                      name: ds.0.transparency\
+                      value: '0'\
+                    - type: STRING\
+                      name: lefty_static_units\
+                      value: '%'\
+                    - type: INTEGER\
+                      name: lefty_units\
+                      value: '1'\
+                    - type: STRING\
+                      name: reference\
+                      value: ULBQW\
+                    - type: INTEGER\
+                      name: righty\
+                      value: '0'\
+                - type: svggraph\
+                  name: 'CPU Load Maximum'\
+                  x: '36'\
+                  'y': '14'\
+                  width: '36'\
+                  height: '5'\
+                  fields:\
+                    - type: STRING\
+                      name: ds.0.color\
+                      value: FF0000\
+                    - type: INTEGER\
+                      name: ds.0.fill\
+                      value: '0'\
+                    - type: STRING\
+                      name: ds.0.items.0\
+                      value: API-cpu-load-maximum1\
+                    - type: STRING\
+                      name: ds.0.items.1\
+                      value: API-cpu-load-maximum2\
+                    - type: STRING\
+                      name: ds.0.items.2\
+                      value: API-cpu-load-maximum3\
+                    - type: STRING\
+                      name: ds.0.items.3\
+                      value: API-cpu-load-maximum4\
+                    - type: STRING\
+                      name: ds.0.items.4\
+                      value: API-cpu-load-maximum5\
+                    - type: STRING\
+                      name: ds.0.items.5\
+                      value: API-cpu-load-maximum6\
+                    - type: STRING\
+                      name: ds.0.items.6\
+                      value: API-cpu-load-maximum7\
+                    - type: STRING\
+                      name: ds.0.items.7\
+                      value: API-cpu-load-maximum8\
+                    - type: STRING\
+                      name: ds.0.items.8\
+                      value: API-cpu-load-maximum9\
+                    - type: STRING\
+                      name: ds.0.items.9\
+                      value: API-cpu-load-maximum10\
+                    - type: STRING\
+                      name: ds.0.items.10\
+                      value: API-cpu-load-maximum11\
+                    - type: STRING\
+                      name: ds.0.items.11\
+                      value: API-cpu-load-maximum12\
+                    - type: STRING\
+                      name: ds.0.items.12\
+                      value: API-cpu-load-maximum13\
+                    - type: STRING\
+                      name: ds.0.items.13\
+                      value: API-cpu-load-maximum14\
+                    - type: STRING\
+                      name: ds.0.items.14\
+                      value: API-cpu-load-maximum15\
+                    - type: STRING\
+                      name: ds.0.items.15\
+                      value: API-cpu-load-maximum16\
+                    - type: STRING\
+                      name: ds.0.items.16\
+                      value: API-cpu-load-maximum17\
+                    - type: STRING\
+                      name: ds.0.items.17\
+                      value: API-cpu-load-maximum18\
+                    - type: STRING\
+                      name: ds.0.items.18\
+                      value: API-cpu-load-maximum19\
+                    - type: STRING\
+                      name: ds.0.items.19\
+                      value: API-cpu-load-maximum20\
+                    - type: STRING\
+                      name: ds.0.items.20\
+                      value: API-cpu-load-maximum21\
+                    - type: STRING\
+                      name: ds.0.items.21\
+                      value: API-cpu-load-maximum22\
+                    - type: STRING\
+                      name: ds.0.items.22\
+                      value: API-cpu-load-maximum23\
+                    - type: STRING\
+                      name: ds.0.items.23\
+                      value: API-cpu-load-maximum24\
+                    - type: STRING\
+                      name: ds.0.items.24\
+                      value: API-cpu-load-maximum25\
+                    - type: STRING\
+                      name: ds.0.items.25\
+                      value: API-cpu-load-maximum26\
+                    - type: STRING\
+                      name: ds.0.items.26\
+                      value: API-cpu-load-maximum27\
+                    - type: STRING\
+                      name: ds.0.items.27\
+                      value: API-cpu-load-maximum28\
+                    - type: STRING\
+                      name: ds.0.items.28\
+                      value: API-cpu-load-maximum29\
+                    - type: STRING\
+                      name: ds.0.items.29\
+                      value: API-cpu-load-maximum30\
+                    - type: STRING\
+                      name: ds.0.items.30\
+                      value: API-cpu-load-maximum31\
+                    - type: STRING\
+                      name: ds.0.items.31\
+                      value: API-cpu-load-maximum32\
+                    - type: STRING\
+                      name: ds.0.items.32\
+                      value: API-cpu-load-maximum33\
+                    - type: STRING\
+                      name: ds.0.items.33\
+                      value: API-cpu-load-maximum34\
+                    - type: STRING\
+                      name: ds.0.items.34\
+                      value: API-cpu-load-maximum35\
+                    - type: STRING\
+                      name: ds.0.items.35\
+                      value: API-cpu-load-maximum36\
+                    - type: STRING\
+                      name: ds.0.items.36\
+                      value: API-cpu-load-maximum37\
+                    - type: STRING\
+                      name: ds.0.items.37\
+                      value: API-cpu-load-maximum38\
+                    - type: STRING\
+                      name: ds.0.items.38\
+                      value: API-cpu-load-maximum39\
+                    - type: STRING\
+                      name: ds.0.items.39\
+                      value: API-cpu-load-maximum40\
+                    - type: STRING\
+                      name: ds.0.items.40\
+                      value: API-cpu-load-maximum41\
+                    - type: STRING\
+                      name: ds.0.items.41\
+                      value: API-cpu-load-maximum42\
+                    - type: STRING\
+                      name: ds.0.items.42\
+                      value: API-cpu-load-maximum43\
+                    - type: STRING\
+                      name: ds.0.items.43\
+                      value: API-cpu-load-maximum44\
+                    - type: STRING\
+                      name: ds.0.items.44\
+                      value: API-cpu-load-maximum45\
+                    - type: STRING\
+                      name: ds.0.items.45\
+                      value: API-cpu-load-maximum46\
+                    - type: STRING\
+                      name: ds.0.items.46\
+                      value: API-cpu-load-maximum47\
+                    - type: STRING\
+                      name: ds.0.items.47\
+                      value: API-cpu-load-maximum48\
+                    - type: INTEGER\
+                      name: ds.0.transparency\
+                      value: '0'\
+                    - type: INTEGER\
+                      name: ds.0.width\
+                      value: '2'\
+                    - type: STRING\
+                      name: lefty_static_units\
+                      value: '%'\
+                    - type: INTEGER\
+                      name: lefty_units\
+                      value: '1'\
+                    - type: STRING\
+                      name: reference\
+                      value: AWPLZ\
+                    - type: INTEGER\
+                      name: righty\
+                      value: '0'\
+                - type: item\
+                  name: 'HA 1b Status'\
+                  x: '48'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: Model\
+                  x: '58'\
+                  'y': '3'\
+                  width: '14'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+                - type: item\
+                  name: 'HA 2 Status'\
+                  x: '60'\
+                  'y': '6'\
+                  width: '12'\
+                  height: '3'\
+                  fields:\
+                    - type: INTEGER\
+                      name: rf_rate\
+                      value: '10'\
+  triggers:\
+    - uuid: a87b0db1ff744b4d9f06ba40e5fafb9f\
+      expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.memory.used)/last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.memory.total)*100>85'\
+      name: 'Disaster Memeory Usage Alert'\
+      priority: DISASTER\
+    - uuid: 5b37e36fe13e4e2bb3fbd1a3fb1120a7\
+      expression: 'last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.memory.used)/last(/Palo Alto Networks Firewalls by API/paloalto.system.resources.memory.total)*100>75'\
+      name: 'High Memeory Usage Alert'\
+      priority: HIGH\
+  graphs:\
+    - uuid: 6c747b3b4a8b4e0495ac5755603ac785\
+      name: 'API-ae2.3007 ibytes & obytes'\
+      graph_items:\
+        - color: 199C0D\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.counter.interface.ibytes\
+        - sortorder: '1'\
+          color: F63100\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.counter.interface.obytes\
+    - uuid: 66baba22818840808b10cae5825912fd\
+      name: 'Memory Utilization'\
+      graph_items:\
+        - color: 199C0D\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.system.resources.memory.free\
+        - sortorder: '1'\
+          color: F63100\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.system.resources.memory.used\
+        - sortorder: '2'\
+          color: 2774A4\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.system.resources.memory.total\
+    - uuid: 94bbe609cd5f474bbc13e8183636c2dd\
+      name: 'Palo Alto Sensor Temperature'\
+      graph_items:\
+        - sortorder: '2'\
+          color: 2774A4\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.thermal.mp.core\
+    - uuid: 44694609641b4c9d87a52dedfceb593b\
+      name: 'Processor Management Plane'\
+      graph_items:\
+        - color: 199C0D\
+          calc_fnc: ALL\
+          item:\
+            host: 'Palo Alto Networks Firewalls by API'\
+            key: paloalto.system.resources.management.cpu\
+}
