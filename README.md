@@ -66,7 +66,7 @@ To use this template, the following requirements must be met:
    ```
 :eight_spoked_asterisk: Add the obtained API key to the Zabbix host:
    - Go to the **Macros** section.
-   - **Macro Names**: `{PALO_API_KEY}` `{$INTERFACE_NAME}` `{$FIREWALL_IP}`
+   - **Macro Names**: `{PALO_API_KEY}` `{$FIREWALL_IP}`
    - **Value**: Enter your API key here.
 
 ## Step 5: Start Monitoring :point_left:
@@ -85,6 +85,10 @@ This template can monitor the following data:
 - Session information
 - Tracked security events
 - Traffic analysis
+- Hardware information
+- Certificates
+- GlobalProtect Gateways Statistics
+- IPSec States
 
 ## Contributing
 
